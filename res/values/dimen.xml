@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Padding -->
+    <dimen name="padding_small">5dp</dimen>
+    <dimen name="padding_middle">10dp</dimen>
+    <dimen name="padding_large">15dp</dimen>
+
+</resources>

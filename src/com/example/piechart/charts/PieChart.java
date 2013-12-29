@@ -31,15 +31,20 @@ public class PieChart extends View {
         mAppearanceAnimator.start();
     }
 
-    public void apply(float[] values) {
+    public void apply(ArrayList<Integer> values) {
         mValues.clear();
 
-        float total = 0;
-        for (float value : values) total += value;
+        int total = 0;
+        for (int value : values) total += value;
 
-        for (float value : values) {
-            mValues.add(new Slice(360 * value / total));
+        int alignment = 360;
+        for (int i = 0; i < values.size() - 1; ++i) {
+            int value = 360 * values.get(i) / total;
+            alignment -= value;
+            mValues.add(new Slice(value));
         }
+
+        mValues.add(new Slice(alignment));
 
         refresh();
     }
@@ -95,10 +100,10 @@ public class PieChart extends View {
 
         private static final Random sRand = new Random();
 
-        private float value;
+        private int value;
         private int color;
 
-        public Slice(float value) {
+        public Slice(int value) {
             this.value = value;
             this.color = getColor();
         }

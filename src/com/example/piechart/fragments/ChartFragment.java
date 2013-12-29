@@ -1,17 +1,43 @@
 package com.example.piechart.fragments;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.view.*;
 import com.example.piechart.R;
 import com.example.piechart.charts.PieChart;
 
-import java.util.Random;
+import java.util.ArrayList;
 
 public class ChartFragment extends Fragment {
 
-    private static final int MAX_VALUES_COUNT = 10;
+    private static final String ARG_VALUES = "ARG_VALUES";
 
+    private FragmentManagerInterface mManager;
     private PieChart mChart;
+
+    private ChartFragment() {}
+
+    public static ChartFragment newFragment(ArrayList<Integer> values) {
+        Bundle args = new Bundle();
+        args.putIntegerArrayList(ARG_VALUES, values);
+
+        ChartFragment fragment = new ChartFragment();
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            mManager = (FragmentManagerInterface) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implements FragmentManagerInterface");
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -24,8 +50,10 @@ public class ChartFragment extends Fragment {
         View view = inflater.inflate(R.layout.chart_fragment, container, false);
 
         view.findViewById(R.id.refresh).setOnClickListener(mRefreshChartOnClickListener);
+
+        ArrayList<Integer> values = getArguments().getIntegerArrayList(ARG_VALUES);
         mChart = (PieChart) view.findViewById(R.id.chart);
-        mChart.apply(generateValues());
+        mChart.apply(values);
 
         return view;
     }
@@ -40,27 +68,17 @@ public class ChartFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.go_preferences:
-                mManager.show(Type.Preferences);
+                mManager.show(FragmentManagerInterface.Type.Preferences);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private float[] generateValues() {
-        Random rand = new Random();
-        int count = rand.nextInt(MAX_VALUES_COUNT - 2) + 2;
-        float[] values = new float[count];
-
-        for (int i = 0; i < count; ++i) values[i] = rand.nextFloat();
-
-        return values;
-    }
-
     private View.OnClickListener mRefreshChartOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mChart.apply(generateValues());
+            mChart.refresh();
         }
     };
 }
