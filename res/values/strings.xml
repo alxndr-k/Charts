@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PieChart</string>
+
+    <!-- Pie Chart -->
+    <string name="pie_chart_refresh">Refresh</string>
+
+    <!-- Menu -->
+    <string name="action_bar_preferences">Preferences</string>
+    <string name="action_bar_chart">Chart</string>
+</resources>
