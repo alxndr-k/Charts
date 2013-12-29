@@ -14,10 +14,6 @@ import java.util.Random;
 
 public class ChartActivity extends Activity implements FragmentManagerInterface {
 
-    public static final int MAX_VALUES_COUNT = 10;
-    public static final int MIN_VALUES_COUNT = 2;
-    private static final int MAX_VALUE = 100;
-
     private ArrayList<Integer> mValues = generateValues();
 
     @Override
@@ -56,9 +52,9 @@ public class ChartActivity extends Activity implements FragmentManagerInterface 
     private static ArrayList<Integer> generateValues() {
         Random rand = new Random();
 
-        int count = rand.nextInt(MAX_VALUES_COUNT - 2) + 2; // min 2 slices need
+        int count = rand.nextInt(Constans.MAX_VALUES_COUNT - 2) + 2; // min 2 slices need
         ArrayList<Integer> values = new ArrayList<Integer>(count);
-        for (int i = 0; i < count; ++i) values.add(rand.nextInt(MAX_VALUE));
+        for (int i = 0; i < count; ++i) values.add(rand.nextInt(Constans.MAX_VALUE));
 
         return values;
     }

@@ -6,7 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
-import com.example.piechart.ChartActivity;
+import com.example.piechart.Constans;
 import com.example.piechart.R;
 
 import java.util.ArrayList;
@@ -17,6 +17,9 @@ public class PreferencesFragment extends ListFragment {
 
     private FragmentManagerInterface mManager;
     private ArrayList<Integer> mValues;
+    private BaseAdapter mAdapter;
+
+    private MenuItem mAdd;
 
     private PreferencesFragment() {}
 
@@ -47,12 +50,15 @@ public class PreferencesFragment extends ListFragment {
         setHasOptionsMenu(true);
 
         mValues = getArguments().getIntegerArrayList(ARG_VALUES);
-        setListAdapter(new SeekAdapter());
+        mAdapter = new SeekAdapter();
+        setListAdapter(mAdapter);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.preferences, menu);
+        mAdd = menu.findItem(R.id.add);
+        updateAddVisibility();
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -62,9 +68,19 @@ public class PreferencesFragment extends ListFragment {
             case R.id.go_chart:
                 mManager.show(FragmentManagerInterface.Type.Chart);
                 return true;
+            case R.id.add:
+                mValues.add(Constans.MAX_VALUE / 2);
+                mAdapter.notifyDataSetChanged();
+                updateAddVisibility();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void updateAddVisibility() {
+        boolean visible = mValues.size() < Constans.MAX_VALUES_COUNT;
+        mAdd.setEnabled(visible);
     }
 
     private class SeekAdapter extends BaseAdapter {
@@ -111,12 +127,8 @@ public class PreferencesFragment extends ListFragment {
 
             holder.seek.setTag(position);
             holder.seek.setProgress((java.lang.Integer) getItem(position));
-
-            if (getCount() <= ChartActivity.MIN_VALUES_COUNT) {
-                holder.remove.setVisibility(View.GONE);
-            } else {
-                holder.remove.setTag(position);
-            }
+            holder.remove.setTag(position);
+            holder.remove.setEnabled(getCount() > Constans.MIN_VALUES_COUNT);
 
             return view;
         }
@@ -141,6 +153,7 @@ public class PreferencesFragment extends ListFragment {
                 int index = (Integer) v.getTag();
                 mValues.remove(index);
                 notifyDataSetInvalidated();
+                updateAddVisibility();
             }
         };
 

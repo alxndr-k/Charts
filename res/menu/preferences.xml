@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/add"
+          android:icon="@android:drawable/ic_menu_add"
+          android:showAsAction="ifRoom"
+          />
+
     <item android:id="@+id/go_chart"
           android:icon="@drawable/action_bar_chart"
-          android:title="@string/action_bar_chart"
-          android:showAsAction="ifRoom|withText"/>
+          android:showAsAction="ifRoom"
+            />
+
 </menu>
