@@ -33,8 +33,8 @@ public class ChartActivity extends Activity implements FragmentManagerInterface 
         }
 
         FragmentTransaction transaction = manager.beginTransaction();
+        addAnimation(transaction, type);
         transaction.replace(android.R.id.content, fragment, type.toString());
-        transaction.addToBackStack(null);
         transaction.commit();
     }
 
@@ -46,6 +46,19 @@ public class ChartActivity extends Activity implements FragmentManagerInterface 
                 return PreferencesFragment.newFragment(mValues);
             default:
                 return null;
+        }
+    }
+
+    private static void addAnimation(FragmentTransaction transaction, Type type) {
+        switch (type) {
+            case Chart:
+                transaction.setCustomAnimations(R.animator.view_in_left, R.animator.view_out_left);
+                break;
+            case Preferences:
+                transaction.setCustomAnimations(R.animator.view_in_right, R.animator.view_out_right);
+                break;
+            default:
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         }
     }
 
