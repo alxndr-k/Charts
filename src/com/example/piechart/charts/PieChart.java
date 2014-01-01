@@ -24,7 +24,6 @@ public class PieChart extends View {
 
     public PieChart(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mAppearanceAnimator.setDuration(2000);
     }
 
     public void refresh() {
