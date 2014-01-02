@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.util.SparseIntArray;
 import android.view.*;
 import android.widget.*;
-import com.example.piechart.Constans;
+import com.example.piechart.Constants;
 import com.example.piechart.R;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class PreferencesFragment extends ListFragment {
     private SeekAdapter mAdapter;
     private MenuItem mAdd;
 
-    private SparseIntArray mViewsTops = new SparseIntArray(Constans.MAX_VALUES_COUNT);
+    private SparseIntArray mViewsTops = new SparseIntArray(Constants.MAX_VALUES_COUNT);
 
     private PreferencesFragment() {}
 
@@ -85,12 +85,12 @@ public class PreferencesFragment extends ListFragment {
     }
 
     private void updateAddVisibility() {
-        boolean visible = mAdapter.getCount() < Constans.MAX_VALUES_COUNT;
+        boolean visible = mAdapter.getCount() < Constants.MAX_VALUES_COUNT;
         mAdd.setEnabled(visible);
     }
 
     private void addWithAnimation() {
-        mAdapter.add(Constans.DEFAULT_VALUE);
+        mAdapter.add(Constants.DEFAULT_VALUE);
         ViewTreeObserver observer = mListView.getViewTreeObserver();
         observer.addOnPreDrawListener(new AddOnPreDrawListener(observer));
     }
@@ -177,8 +177,8 @@ public class PreferencesFragment extends ListFragment {
 
         private LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        private ArrayList<Integer> values = new ArrayList<Integer>(Constans.MAX_VALUES_COUNT);
-        private ArrayList<Integer> ids = new ArrayList<Integer>(Constans.MAX_VALUES_COUNT);
+        private ArrayList<Integer> values = new ArrayList<Integer>(Constants.MAX_VALUES_COUNT);
+        private ArrayList<Integer> ids = new ArrayList<Integer>(Constants.MAX_VALUES_COUNT);
 
         private int nextId;
 
@@ -242,7 +242,7 @@ public class PreferencesFragment extends ListFragment {
             holder.seek.setTag(position);
             holder.seek.setProgress((java.lang.Integer) getItem(position));
             holder.remove.setTag(position);
-            holder.remove.setEnabled(getCount() > Constans.MIN_VALUES_COUNT);
+            holder.remove.setEnabled(getCount() > Constants.MIN_VALUES_COUNT);
 
             return view;
         }
