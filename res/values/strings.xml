@@ -8,4 +8,6 @@
     <!-- Action Bar -->
     <string name="action_bar_preferences">Preferences</string>
     <string name="action_bar_chart">Chart</string>
+    <string name="action_bar_preferences_add">Add item</string>
+
 </resources>

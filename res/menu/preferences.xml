@@ -4,11 +4,13 @@
 
     <item android:id="@+id/add"
           android:icon="@android:drawable/ic_menu_add"
+          android:title="@string/action_bar_chart"
           android:showAsAction="ifRoom"
           />
 
     <item android:id="@+id/go_chart"
           android:icon="@drawable/action_bar_chart"
+          android:title="@string/action_bar_preferences_add"
           android:showAsAction="ifRoom"
             />
 
