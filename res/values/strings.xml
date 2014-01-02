@@ -10,4 +10,8 @@
     <string name="action_bar_chart">Chart</string>
     <string name="action_bar_preferences_add">Add item</string>
 
+    <!-- Preferences -->
+    <string name="preferences_no_items">(No items to show)</string>
+    <string name="preferences_added_max_items_number">Remove some items first</string>
+
 </resources>

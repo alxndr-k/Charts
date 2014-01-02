@@ -19,7 +19,6 @@ public class PreferencesFragment extends ListFragment {
     private FragmentManagerInterface mManager;
     private ListView mListView;
     private SeekAdapter mAdapter;
-    private MenuItem mAdd;
 
     private SparseIntArray mViewsTops = new SparseIntArray(Constants.MAX_VALUES_COUNT);
 
@@ -59,14 +58,13 @@ public class PreferencesFragment extends ListFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         mListView = getListView();
         mListView.setDivider(null);
+        setEmptyText(getString(R.string.preferences_no_items));
         super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.preferences, menu);
-        mAdd = menu.findItem(R.id.add);
-        updateAddVisibility();
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -77,16 +75,20 @@ public class PreferencesFragment extends ListFragment {
                 mManager.show(FragmentManagerInterface.Type.Chart);
                 return true;
             case R.id.add:
-                addWithAnimation();
+                boolean maxReached = mAdapter.getCount() < Constants.MAX_VALUES_COUNT;
+                if (maxReached) {
+                    addWithAnimation();
+                } else {
+                    showToast(R.string.preferences_added_max_items_number);
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private void updateAddVisibility() {
-        boolean visible = mAdapter.getCount() < Constants.MAX_VALUES_COUNT;
-        mAdd.setEnabled(visible);
+    private void showToast(int message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
     private void addWithAnimation() {
@@ -190,14 +192,12 @@ public class PreferencesFragment extends ListFragment {
         public void add(int value) {
             values.add(value);
             ids.add(++nextId);
-            updateAddVisibility();
             notifyDataSetChanged();
         }
 
         public void remove(int position) {
             values.remove(position);
             ids.remove(position);
-            updateAddVisibility();
             notifyDataSetChanged();
         }
 
@@ -241,8 +241,7 @@ public class PreferencesFragment extends ListFragment {
 
             holder.seek.setTag(position);
             holder.seek.setProgress((java.lang.Integer) getItem(position));
-            holder.remove.setTag(position);
-            holder.remove.setEnabled(getCount() > Constants.MIN_VALUES_COUNT);
+//            holder.remove.setVisibility(getCount() > Constants.MIN_VALUES_COUNT ? View.VISIBLE : View.INVISIBLE);
 
             return view;
         }
