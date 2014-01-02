@@ -14,6 +14,7 @@ import java.util.Random;
 public class PieChart extends View {
 
     private static final int TEXT_SIZE = 30;
+    private static final int APPEARANCE_TIME = 500;
     private final String NO_DATA_MESSAGE = getResources().getString(R.string.chart_no_data_to_build);
 
     private ArrayList<Slice> mValues = new ArrayList<Slice>();
@@ -26,6 +27,7 @@ public class PieChart extends View {
 
     public PieChart(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mAppearanceAnimator.setDuration(APPEARANCE_TIME);
         mPaint.setTextAlign(Paint.Align.CENTER);
         mPaint.setTextSize(TEXT_SIZE);
     }
@@ -58,11 +60,14 @@ public class PieChart extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
-        int ww = w - getPaddingLeft();
-        int hh = h - getPaddingTop();
-        int diameter = Math.min(ww, hh);
+        int width = w - getPaddingLeft() - getPaddingRight();
+        int height = h - getPaddingTop() - getPaddingBottom();
+        int diameter = Math.min(width, height);
 
-        mRect = new RectF(getPaddingLeft(), getPaddingTop(), diameter, diameter);
+        int left = getPaddingLeft() + (width - diameter) / 2;
+        int top = getPaddingTop() + (height - diameter) / 2;
+
+        mRect = new RectF(left, top, left + diameter, top + diameter);
     }
 
     @Override
