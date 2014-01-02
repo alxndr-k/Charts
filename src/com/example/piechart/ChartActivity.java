@@ -52,10 +52,10 @@ public class ChartActivity extends Activity implements FragmentManagerInterface 
     private static void addAnimation(FragmentTransaction transaction, Type type) {
         switch (type) {
             case Chart:
-                transaction.setCustomAnimations(R.animator.view_in_left, R.animator.view_out_left);
+                transaction.setCustomAnimations(R.animator.view_enter_left, R.animator.view_exit_left);
                 break;
             case Preferences:
-                transaction.setCustomAnimations(R.animator.view_in_right, R.animator.view_out_right);
+                transaction.setCustomAnimations(R.animator.view_enter_right, R.animator.view_exit_right);
                 break;
             default:
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
