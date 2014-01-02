@@ -4,6 +4,7 @@
 
     <!-- Pie Chart -->
     <string name="pie_chart_refresh">Refresh</string>
+    <string name="chart_no_data_to_build">Need data to build chart</string>
 
     <!-- Action Bar -->
     <string name="action_bar_preferences">Preferences</string>

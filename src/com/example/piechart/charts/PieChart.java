@@ -2,17 +2,19 @@ package com.example.piechart.charts;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.RectF;
+import android.graphics.*;
 import android.util.AttributeSet;
 import android.util.Property;
 import android.view.View;
+import com.example.piechart.R;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 public class PieChart extends View {
+
+    private static final int TEXT_SIZE = 30;
+    private final String NO_DATA_MESSAGE = getResources().getString(R.string.chart_no_data_to_build);
 
     private ArrayList<Slice> mValues = new ArrayList<Slice>();
 
@@ -24,6 +26,8 @@ public class PieChart extends View {
 
     public PieChart(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mPaint.setTextAlign(Paint.Align.CENTER);
+        mPaint.setTextSize(TEXT_SIZE);
     }
 
     public void refresh() {
@@ -33,17 +37,19 @@ public class PieChart extends View {
     public void apply(ArrayList<Integer> values) {
         mValues.clear();
 
-        int total = 0;
-        for (int value : values) total += value;
+        if (values != null && values.size() > 0) {
+            int total = 0;
+            for (int value : values) total += value;
 
-        int alignment = 360;
-        for (int i = 0; i < values.size() - 1; ++i) {
-            int value = 360 * values.get(i) / total;
-            alignment -= value;
-            mValues.add(new Slice(value));
+            int alignment = 360;
+            for (int i = 0; i < values.size() - 1; ++i) {
+                int value = 360 * values.get(i) / total;
+                alignment -= value;
+                mValues.add(new Slice(value));
+            }
+
+            mValues.add(new Slice(alignment));
         }
-
-        mValues.add(new Slice(alignment));
 
         refresh();
     }
@@ -62,6 +68,15 @@ public class PieChart extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        if (mValues.size() > 0) {
+            drawChart(canvas);
+        } else {
+            drawNoData(canvas);
+        }
+    }
+
+    private void drawChart(Canvas canvas) {
         float startAngle = 0;
         for (Slice slice : mValues) {
             mPaint.setColor(slice.color);
@@ -70,6 +85,11 @@ public class PieChart extends View {
             canvas.drawArc(mRect, start, sweep, true, mPaint);
             startAngle += slice.value;
         }
+    }
+
+    private void drawNoData(Canvas canvas) {
+        mPaint.setColor(Color.WHITE);
+        canvas.drawText(NO_DATA_MESSAGE, getWidth() / 2, getHeight() / 2, mPaint);
     }
 
     private void setAppearance(float appearance) {

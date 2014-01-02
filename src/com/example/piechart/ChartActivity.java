@@ -65,7 +65,7 @@ public class ChartActivity extends Activity implements FragmentManagerInterface 
     private static ArrayList<Integer> generateValues() {
         Random rand = new Random();
 
-        int count = rand.nextInt(Constants.MAX_VALUES_COUNT - 2) + 2; // min 2 slices need
+        int count = rand.nextInt(Constants.MAX_VALUES_COUNT) + 1;
         ArrayList<Integer> values = new ArrayList<Integer>(count);
         for (int i = 0; i < count; ++i) values.add(rand.nextInt(Constants.MAX_VALUE));
 
