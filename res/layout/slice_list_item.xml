@@ -21,6 +21,7 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/padding_middle"
             android:paddingRight="0dp"
-            android:src="@android:drawable/ic_menu_delete"
+            android:clickable="true"
+            android:background="@drawable/remove_slice"
             />
 </LinearLayout>
