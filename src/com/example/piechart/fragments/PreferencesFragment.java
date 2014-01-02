@@ -156,7 +156,7 @@ public class PreferencesFragment extends ListFragment {
                 int itemId = (int) mAdapter.getItemId(position);
                 int oldTop = mViewsTops.get(itemId, -1);
                 int newTop = child.getTop();
-                if (oldTop > 0) {
+                if (oldTop >= 0) {
                     if (oldTop != newTop) {
                         child.setTranslationY(oldTop - newTop);
                         child.animate().translationY(0);
