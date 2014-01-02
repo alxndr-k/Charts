@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.SparseIntArray;
 import android.view.*;
 import android.widget.*;
 import com.example.piechart.Constans;
@@ -16,10 +17,11 @@ public class PreferencesFragment extends ListFragment {
     private static final String ARG_VALUES = "ARG_VALUES";
 
     private FragmentManagerInterface mManager;
-    private ArrayList<Integer> mValues;
-    private BaseAdapter mAdapter;
-
+    private ListView mListView;
+    private SeekAdapter mAdapter;
     private MenuItem mAdd;
+
+    private SparseIntArray mViewsTops = new SparseIntArray(Constans.MAX_VALUES_COUNT);
 
     private PreferencesFragment() {}
 
@@ -49,9 +51,15 @@ public class PreferencesFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        mValues = getArguments().getIntegerArrayList(ARG_VALUES);
         mAdapter = new SeekAdapter();
         setListAdapter(mAdapter);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        mListView = getListView();
+        mListView.setDivider(null);
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
@@ -69,9 +77,7 @@ public class PreferencesFragment extends ListFragment {
                 mManager.show(FragmentManagerInterface.Type.Chart);
                 return true;
             case R.id.add:
-                mValues.add(Constans.MAX_VALUE / 2);
-                mAdapter.notifyDataSetChanged();
-                updateAddVisibility();
+                addWithAnimation();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -79,32 +85,140 @@ public class PreferencesFragment extends ListFragment {
     }
 
     private void updateAddVisibility() {
-        boolean visible = mValues.size() < Constans.MAX_VALUES_COUNT;
+        boolean visible = mAdapter.getCount() < Constans.MAX_VALUES_COUNT;
         mAdd.setEnabled(visible);
+    }
+
+    private void addWithAnimation() {
+        mAdapter.add(Constans.DEFAULT_VALUE);
+        ViewTreeObserver observer = mListView.getViewTreeObserver();
+        observer.addOnPreDrawListener(new AddOnPreDrawListener(observer));
+    }
+
+    private void removeWithAnimation(View viewToRemove) {
+        saveViewsTop(viewToRemove);
+
+        int position = mListView.getPositionForView(viewToRemove);
+        mAdapter.remove(position);
+
+        ViewTreeObserver observer = mListView.getViewTreeObserver();
+        observer.addOnPreDrawListener(new RemoveOnPreDrawListener(observer));
+    }
+
+    private void saveViewsTop(View viewToRemove) {
+        int firstVisiblePosition = mListView.getFirstVisiblePosition();
+        for (int i = 0; i < mListView.getChildCount(); ++i) {
+            View child = mListView.getChildAt(i);
+            if (child != viewToRemove) {
+                int position = firstVisiblePosition + i;
+                int itemId = (int) mAdapter.getItemId(position);
+                mViewsTops.put(itemId, child.getTop());
+            }
+        }
+    }
+
+    private class AddOnPreDrawListener implements ViewTreeObserver.OnPreDrawListener {
+
+        private ViewTreeObserver observer;
+
+        public AddOnPreDrawListener(ViewTreeObserver observer) {
+            this.observer = observer;
+        }
+
+        @Override
+        public boolean onPreDraw() {
+            observer.removeOnPreDrawListener(this);
+            int lastVisiblePosition = mListView.getLastVisiblePosition();
+            if (lastVisiblePosition == mAdapter.getCount() - 1) {
+                View addedView = mListView.getChildAt(lastVisiblePosition);
+                addedView.setAlpha(0);
+                addedView.animate().alpha(1);
+            }
+            return true;
+        }
+    }
+
+    private class RemoveOnPreDrawListener implements ViewTreeObserver.OnPreDrawListener {
+
+        private ViewTreeObserver observer;
+
+        public RemoveOnPreDrawListener(ViewTreeObserver observer) {
+            this.observer = observer;
+        }
+
+        public boolean onPreDraw() {
+            observer.removeOnPreDrawListener(this);
+
+            int firstVisiblePosition = mListView.getFirstVisiblePosition();
+            for (int i = 0; i < mListView.getChildCount(); ++i) {
+                View child = mListView.getChildAt(i);
+                int position = firstVisiblePosition + i;
+                int itemId = (int) mAdapter.getItemId(position);
+                int oldTop = mViewsTops.get(itemId, -1);
+                int newTop = child.getTop();
+                if (oldTop > 0) {
+                    if (oldTop != newTop) {
+                        child.setTranslationY(oldTop - newTop);
+                        child.animate().translationY(0);
+                    }
+                } else {
+                    int childHeight = child.getHeight() + mListView.getDividerHeight();
+                    oldTop = newTop + (i > 0 ? childHeight : -childHeight);
+                    child.setTranslationY(oldTop - newTop);
+                    child.animate().translationY(0);
+                }
+            }
+            mViewsTops.clear();
+            return true;
+        }
     }
 
     private class SeekAdapter extends BaseAdapter {
 
         private LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
+        private ArrayList<Integer> values = new ArrayList<Integer>(Constans.MAX_VALUES_COUNT);
+        private ArrayList<Integer> ids = new ArrayList<Integer>(Constans.MAX_VALUES_COUNT);
+
+        private int nextId;
+
+        public SeekAdapter() {
+            values = getArguments().getIntegerArrayList(ARG_VALUES);
+            for (nextId = 0; nextId < values.size(); ++nextId) ids.add(nextId);
+        }
+
+        public void add(int value) {
+            values.add(value);
+            ids.add(++nextId);
+            updateAddVisibility();
+            notifyDataSetChanged();
+        }
+
+        public void remove(int position) {
+            values.remove(position);
+            ids.remove(position);
+            updateAddVisibility();
+            notifyDataSetChanged();
+        }
+
         @Override
         public int getCount() {
-            return mValues.size();
+            return values.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return mValues.get(position);
+            return values.get(position);
         }
 
         @Override
         public long getItemId(int position) {
-            return position;
+            return ids.get(position);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // TODO: add states for remove
+            // TODO: add states for remove view
             View view = convertView;
             ViewHolder holder;
 
@@ -135,9 +249,9 @@ public class PreferencesFragment extends ListFragment {
 
         private SeekBar.OnSeekBarChangeListener mSeekChangeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            public void onProgressChanged(SeekBar seekBar, int value, boolean fromUser) {
                 int index = (Integer) seekBar.getTag();
-                mValues.set(index, progress);
+                values.set(index, value);
             }
 
             @Override
@@ -150,10 +264,7 @@ public class PreferencesFragment extends ListFragment {
         private View.OnClickListener mRemoveOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int index = (Integer) v.getTag();
-                mValues.remove(index);
-                notifyDataSetInvalidated();
-                updateAddVisibility();
+                removeWithAnimation((View) v.getParent());
             }
         };
 
