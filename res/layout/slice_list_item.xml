@@ -24,4 +24,5 @@
             android:clickable="true"
             android:background="@android:drawable/ic_menu_delete"
             />
+
 </LinearLayout>

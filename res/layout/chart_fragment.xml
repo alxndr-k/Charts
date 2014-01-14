@@ -4,6 +4,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
         >
+
     <com.example.piechart.charts.PieChart
             android:id="@+id/chart"
             android:layout_width="match_parent"
@@ -11,11 +12,13 @@
             android:layout_weight="1"
             android:padding="10dp"
             />
+
     <Button
             android:id="@+id/refresh"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/pie_chart_refresh"
             />
+
 </LinearLayout>
 
