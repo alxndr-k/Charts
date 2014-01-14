@@ -186,19 +186,25 @@ public class PreferencesFragment extends ListFragment {
         private ArrayList<Integer> ids = new ArrayList<Integer>(Constants.MAX_VALUES_COUNT); // array with unique id, need that for animation
 
         private int nextId; // unique id for next item to add
+        private int sum;
 
         public SeekAdapter() {
             values = getArguments().getIntegerArrayList(ARG_VALUES);
-            for (nextId = 0; nextId < values.size(); ++nextId) ids.add(nextId);
+            for (nextId = 0; nextId < values.size(); ++nextId) {
+                ids.add(nextId);
+                sum += values.get(nextId);
+            }
         }
 
         public void add(int value) {
+            sum += value;
             values.add(value);
             ids.add(++nextId);
             notifyDataSetChanged();
         }
 
         public void remove(int position) {
+            sum -= values.get(position);
             values.remove(position);
             ids.remove(position);
             notifyDataSetChanged();
@@ -233,6 +239,7 @@ public class PreferencesFragment extends ListFragment {
                 view.findViewById(R.id.remove).setOnClickListener(mRemoveOnClickListener);
 
                 holder = new ViewHolder();
+                holder.value = (TextView) view.findViewById(R.id.value);
                 holder.seek = seek;
                 view.setTag(holder);
             } else {
@@ -242,6 +249,8 @@ public class PreferencesFragment extends ListFragment {
             holder.seek.setTag(position);
             holder.seek.setProgress((Integer) getItem(position));
 
+            holder.value.setText(String.format("%d%%", values.get(position) * 100 / sum));
+
             return view;
         }
 
@@ -249,6 +258,7 @@ public class PreferencesFragment extends ListFragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int value, boolean fromUser) {
                 int index = (Integer) seekBar.getTag();
+                sum = sum - values.get(index) + value;
                 values.set(index, value);
             }
 
@@ -256,7 +266,9 @@ public class PreferencesFragment extends ListFragment {
             public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                notifyDataSetChanged();
+            }
         };
 
         private View.OnClickListener mRemoveOnClickListener = new View.OnClickListener() {
@@ -267,6 +279,7 @@ public class PreferencesFragment extends ListFragment {
         };
 
         private class ViewHolder {
+            TextView value;
             SeekBar seek;
         }
     }

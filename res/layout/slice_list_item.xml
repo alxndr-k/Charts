@@ -8,6 +8,13 @@
               android:background="@drawable/background_with_divider"
         >
 
+    <TextView
+        android:id="@+id/value"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        />
+
     <SeekBar
             android:id="@+id/seek"
             android:layout_width="0dp"
