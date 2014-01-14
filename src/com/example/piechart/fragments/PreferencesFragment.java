@@ -14,6 +14,9 @@ import java.util.ArrayList;
 
 public class PreferencesFragment extends ListFragment {
 
+    private static final int ANIMATION_DURATION_ADD = 700;
+    private static final int ANIMATION_DURATION_REMOVE = 500;
+
     private static final String ARG_VALUES = "ARG_VALUES";
 
     private FragmentManagerInterface mManager;
@@ -134,7 +137,7 @@ public class PreferencesFragment extends ListFragment {
             if (lastVisiblePosition == mAdapter.getCount() - 1) {
                 View addedView = mListView.getChildAt(lastVisiblePosition);
                 addedView.setAlpha(0);
-                addedView.animate().alpha(1);
+                addedView.animate().setDuration(ANIMATION_DURATION_ADD).alpha(1);
             }
             return true;
         }
@@ -167,7 +170,7 @@ public class PreferencesFragment extends ListFragment {
                     int childHeight = child.getHeight() + mListView.getDividerHeight();
                     oldTop = newTop + (i > 0 ? childHeight : -childHeight);
                     child.setTranslationY(oldTop - newTop);
-                    child.animate().translationY(0);
+                    child.animate().setDuration(ANIMATION_DURATION_REMOVE).translationY(0);
                 }
             }
             mViewsTops.clear();
@@ -180,22 +183,28 @@ public class PreferencesFragment extends ListFragment {
         private LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         private ArrayList<Integer> values = new ArrayList<Integer>(Constants.MAX_VALUES_COUNT);
-        private ArrayList<Integer> ids = new ArrayList<Integer>(Constants.MAX_VALUES_COUNT);
+        private ArrayList<Integer> ids = new ArrayList<Integer>(Constants.MAX_VALUES_COUNT); // array with unique id, need that for animation
 
-        private int nextId;
+        private int nextId; // unique id for next item to add
+        private int sum;
 
         public SeekAdapter() {
             values = getArguments().getIntegerArrayList(ARG_VALUES);
-            for (nextId = 0; nextId < values.size(); ++nextId) ids.add(nextId);
+            for (nextId = 0; nextId < values.size(); ++nextId) {
+                ids.add(nextId);
+                sum += values.get(nextId);
+            }
         }
 
         public void add(int value) {
+            sum += value;
             values.add(value);
             ids.add(++nextId);
             notifyDataSetChanged();
         }
 
         public void remove(int position) {
+            sum -= values.get(position);
             values.remove(position);
             ids.remove(position);
             notifyDataSetChanged();
@@ -218,7 +227,6 @@ public class PreferencesFragment extends ListFragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // TODO: add states for remove view
             View view = convertView;
             ViewHolder holder;
 
@@ -228,20 +236,20 @@ public class PreferencesFragment extends ListFragment {
                 SeekBar seek = (SeekBar) view.findViewById(R.id.seek);
                 seek.setOnSeekBarChangeListener(mSeekChangeListener);
 
-                View remove = view.findViewById(R.id.remove);
-                remove.setOnClickListener(mRemoveOnClickListener);
+                view.findViewById(R.id.remove).setOnClickListener(mRemoveOnClickListener);
 
                 holder = new ViewHolder();
+                holder.value = (TextView) view.findViewById(R.id.value);
                 holder.seek = seek;
-                holder.remove = remove;
                 view.setTag(holder);
             } else {
                 holder = (ViewHolder) view.getTag();
             }
 
             holder.seek.setTag(position);
-            holder.seek.setProgress((java.lang.Integer) getItem(position));
-//            holder.remove.setVisibility(getCount() > Constants.MIN_VALUES_COUNT ? View.VISIBLE : View.INVISIBLE);
+            holder.seek.setProgress((Integer) getItem(position));
+
+            holder.value.setText(String.format("%d%%", values.get(position) * 100 / sum));
 
             return view;
         }
@@ -250,6 +258,7 @@ public class PreferencesFragment extends ListFragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int value, boolean fromUser) {
                 int index = (Integer) seekBar.getTag();
+                sum = sum - values.get(index) + value;
                 values.set(index, value);
             }
 
@@ -257,7 +266,9 @@ public class PreferencesFragment extends ListFragment {
             public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                notifyDataSetChanged();
+            }
         };
 
         private View.OnClickListener mRemoveOnClickListener = new View.OnClickListener() {
@@ -268,8 +279,8 @@ public class PreferencesFragment extends ListFragment {
         };
 
         private class ViewHolder {
+            TextView value;
             SeekBar seek;
-            View remove;
         }
     }
 }

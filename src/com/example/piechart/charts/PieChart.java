@@ -4,7 +4,6 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.*;
 import android.util.AttributeSet;
-import android.util.Property;
 import android.view.View;
 import com.example.piechart.R;
 
@@ -13,21 +12,21 @@ import java.util.Random;
 
 public class PieChart extends View {
 
-    private static final int TEXT_SIZE = 30;
-    private static final int APPEARANCE_TIME = 500;
+    private static final int TEXT_SIZE = 60;
+    private static final int ANIMATION_DURATION_APPEARANCE = 1000;
     private final String NO_DATA_MESSAGE = getResources().getString(R.string.chart_no_data_to_build);
 
     private ArrayList<Slice> mValues = new ArrayList<Slice>();
 
     private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private RectF mRect;
-    private ObjectAnimator mAppearanceAnimator = ObjectAnimator.ofFloat(this, PieChart.APPEARANCE, 1);
+    private ObjectAnimator mAppearanceAnimator = ObjectAnimator.ofFloat(this, "appearance", 1);
 
     private float mAppearance; // indicate appearance progress
 
     public PieChart(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mAppearanceAnimator.setDuration(APPEARANCE_TIME);
+        mAppearanceAnimator.setDuration(ANIMATION_DURATION_APPEARANCE);
         mPaint.setTextAlign(Paint.Align.CENTER);
         mPaint.setTextSize(TEXT_SIZE);
     }
@@ -97,22 +96,11 @@ public class PieChart extends View {
         canvas.drawText(NO_DATA_MESSAGE, getWidth() / 2, getHeight() / 2, mPaint);
     }
 
+    @SuppressWarnings("unused")
     private void setAppearance(float appearance) {
         mAppearance = appearance;
         invalidate();
     }
-
-    public static final Property<View, Float> APPEARANCE = new Property<View, Float>(Float.class, "appearance") {
-        @Override
-        public void set(View chart, Float value) {
-            ((PieChart) chart).setAppearance(value);
-        }
-
-        @Override
-        public Float get(View object) {
-            return 0.0f; // always start from 0
-        }
-    };
 
     private static class Slice {
 
