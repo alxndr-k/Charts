@@ -250,6 +250,8 @@ public class PreferencesFragment extends ListFragment {
             holder.seek.setProgress((Integer) getItem(position));
 
             holder.value.setText(String.format("%d%%", values.get(position) * 100 / sum));
+            holder.value.setAlpha(0);
+            holder.value.animate().alpha(1).setDuration(ANIMATION_DURATION_ADD);
 
             return view;
         }

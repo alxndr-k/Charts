@@ -28,7 +28,7 @@ public class PieChart extends View {
         super(context, attrs);
         mAppearanceAnimator.setDuration(ANIMATION_DURATION_APPEARANCE);
         mPaint.setTextAlign(Paint.Align.CENTER);
-        mPaint.setTextSize(TEXT_SIZE);
+        mPaint.setTextSize(TEXT_SIZE); // TODO: set correct text size
     }
 
     public void refresh() {
