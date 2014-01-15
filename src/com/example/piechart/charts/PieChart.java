@@ -2,6 +2,7 @@ package com.example.piechart.charts;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.*;
 import android.util.AttributeSet;
 import android.view.View;
@@ -30,7 +31,16 @@ public class PieChart extends View {
         super(context, attrs);
         mAppearanceAnimator.setDuration(ANIMATION_DURATION_APPEARANCE);
         mPaint.setTextAlign(Paint.Align.CENTER);
-        mPaint.setTextSize(getResources().getDimensionPixelSize(R.dimen.font_size_middle));
+
+        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.PieChart, 0, 0);
+        try {
+            mDrawValues = a.getBoolean(R.styleable.PieChart_showValues, false);
+            int textSize = a.getDimensionPixelSize(R.styleable.PieChart_textSize, getResources().getDimensionPixelOffset(R.dimen.font_size_middle));
+            mPaint.setTextSize(textSize);
+        } finally {
+            a.recycle();
+        }
+
     }
 
     public void refresh() {
