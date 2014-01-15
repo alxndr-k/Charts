@@ -13,12 +13,15 @@ import java.util.Random;
 public class PieChart extends View {
 
     private static final int ANIMATION_DURATION_APPEARANCE = 1000;
+    private static final int INNER_PADDING = 60;
     private final String NO_DATA_MESSAGE = getResources().getString(R.string.chart_no_data_to_build);
+
+    private boolean mDrawValues = true;
 
     private ArrayList<Slice> mValues = new ArrayList<Slice>();
 
     private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private RectF mRect;
+    private RectF mPieRect;
     private ObjectAnimator mAppearanceAnimator = ObjectAnimator.ofFloat(this, "appearance", 1);
 
     private float mAppearance; // indicate appearance progress
@@ -60,12 +63,12 @@ public class PieChart extends View {
 
         int width = w - getPaddingLeft() - getPaddingRight();
         int height = h - getPaddingTop() - getPaddingBottom();
-        int diameter = Math.min(width, height);
+        int diameter = Math.min(width, height) - (mDrawValues ? INNER_PADDING : 0);
 
         int left = getPaddingLeft() + (width - diameter) / 2;
         int top = getPaddingTop() + (height - diameter) / 2;
 
-        mRect = new RectF(left, top, left + diameter, top + diameter);
+        mPieRect = new RectF(left, top, left + diameter, top + diameter);
     }
 
     @Override
@@ -80,14 +83,34 @@ public class PieChart extends View {
     }
 
     private void drawChart(Canvas canvas) {
-        float startAngle = 0;
+        int startAngle = 0;
         for (Slice slice : mValues) {
             mPaint.setColor(slice.color);
             float sweep = slice.value * mAppearance;
             float start = startAngle + ((slice.value - sweep) / 2);
-            canvas.drawArc(mRect, start, sweep, true, mPaint);
+            canvas.drawArc(mPieRect, start, sweep, true, mPaint);
+
+            if (mDrawValues) drawValues(canvas, startAngle, slice.value);
+
             startAngle += slice.value;
         }
+    }
+
+    private void drawValues(Canvas canvas, int startAngle, int value) {
+        mPaint.setColor(Color.WHITE);
+        double angle = Math.toRadians(startAngle + value / 2);
+        float radius = mPieRect.width() / 2;
+        float x = (float) (radius * Math.cos(angle));
+        float y = (float) (radius * Math.sin(angle));
+        float absoluteX = mPieRect.left + radius + x;
+        float absoluteY = mPieRect.top + radius + y;
+
+        canvas.drawLine(absoluteX - x * 0.05f, absoluteY - y * 0.05f, absoluteX + x * 0.05f, absoluteY + y * 0.05f, mPaint);
+
+        String text = String.format("%.1f%%", value * 100.0 / 360 * mAppearance);
+        Rect rect = new Rect();
+        mPaint.getTextBounds(text, 0, text.length(), rect);
+        canvas.drawText(text, absoluteX + x * 0.1f, absoluteY + y * 0.1f + rect.height() / 2, mPaint); // + rect.height() / 2 - vertical align
     }
 
     private void drawNoData(Canvas canvas) {
