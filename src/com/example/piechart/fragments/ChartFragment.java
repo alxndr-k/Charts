@@ -16,7 +16,7 @@ public class ChartFragment extends Fragment {
     private FragmentManagerInterface mManager;
     private PieChart mChart;
 
-    private ChartFragment() {}
+    public ChartFragment() {}
 
     public static ChartFragment newFragment(ArrayList<Integer> values) {
         Bundle args = new Bundle();

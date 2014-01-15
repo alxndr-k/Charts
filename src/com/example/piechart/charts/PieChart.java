@@ -14,7 +14,7 @@ import java.util.Random;
 public class PieChart extends View {
 
     private static final int ANIMATION_DURATION_APPEARANCE = 1000;
-    private static final int INNER_PADDING = 60;
+    private static final int INNER_PADDING = 90;
     private final String NO_DATA_MESSAGE = getResources().getString(R.string.chart_no_data_to_build);
 
     private boolean mDrawValues = true;
@@ -35,7 +35,7 @@ public class PieChart extends View {
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.PieChart, 0, 0);
         try {
             mDrawValues = a.getBoolean(R.styleable.PieChart_showValues, false);
-            int textSize = a.getDimensionPixelSize(R.styleable.PieChart_textSize, getResources().getDimensionPixelOffset(R.dimen.font_size_middle));
+            int textSize = a.getDimensionPixelSize(R.styleable.PieChart_textSize, getResources().getDimensionPixelOffset(R.dimen.font_size_small));
             mPaint.setTextSize(textSize);
         } finally {
             a.recycle();

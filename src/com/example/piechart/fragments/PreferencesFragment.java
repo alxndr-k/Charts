@@ -25,7 +25,7 @@ public class PreferencesFragment extends ListFragment {
 
     private SparseIntArray mViewsTops = new SparseIntArray(Constants.MAX_VALUES_COUNT);
 
-    private PreferencesFragment() {}
+    public PreferencesFragment() {}
 
     public static PreferencesFragment newFragment(ArrayList<Integer> values) {
         Bundle args = new Bundle();
@@ -250,8 +250,6 @@ public class PreferencesFragment extends ListFragment {
             holder.seek.setProgress((Integer) getItem(position));
 
             holder.value.setText(String.format("%.1f%%", values.get(position) * 100.0 / sum));
-            holder.value.setAlpha(0);
-            holder.value.animate().alpha(1).setDuration(ANIMATION_DURATION_ADD);
 
             return view;
         }
