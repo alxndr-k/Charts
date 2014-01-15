@@ -12,7 +12,6 @@ import java.util.Random;
 
 public class PieChart extends View {
 
-    private static final int TEXT_SIZE = 60;
     private static final int ANIMATION_DURATION_APPEARANCE = 1000;
     private final String NO_DATA_MESSAGE = getResources().getString(R.string.chart_no_data_to_build);
 
@@ -28,7 +27,7 @@ public class PieChart extends View {
         super(context, attrs);
         mAppearanceAnimator.setDuration(ANIMATION_DURATION_APPEARANCE);
         mPaint.setTextAlign(Paint.Align.CENTER);
-        mPaint.setTextSize(TEXT_SIZE); // TODO: set correct text size
+        mPaint.setTextSize(getResources().getDimensionPixelSize(R.dimen.font_size_middle));
     }
 
     public void refresh() {

@@ -6,4 +6,9 @@
     <dimen name="padding_middle">10dp</dimen>
     <dimen name="padding_large">15dp</dimen>
 
+    <!-- Font Size -->
+    <dimen name="font_size_small">10sp</dimen>
+    <dimen name="font_size_middle">20sp</dimen>
+    <dimen name="font_size_large">40sp</dimen>
+
 </resources>
