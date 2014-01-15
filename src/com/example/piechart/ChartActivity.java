@@ -19,7 +19,8 @@ public class ChartActivity extends Activity implements FragmentManagerInterface 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        show(FragmentManagerInterface.Type.Chart);
+
+        if (savedInstanceState == null) show(FragmentManagerInterface.Type.Chart);
     }
 
     @Override
