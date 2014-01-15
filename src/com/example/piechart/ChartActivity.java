@@ -23,7 +23,7 @@ public class ChartActivity extends Activity implements FragmentManagerInterface 
     }
 
     @Override
-    public void show(FragmentManagerInterface.Type type) {
+    public void show(Type type) {
         FragmentManager manager = getFragmentManager();
 
         Fragment fragment = manager.findFragmentByTag(type.toString());
@@ -38,7 +38,7 @@ public class ChartActivity extends Activity implements FragmentManagerInterface 
         transaction.commit();
     }
 
-    private Fragment newFragment(FragmentManagerInterface.Type type) {
+    private Fragment newFragment(Type type) {
         switch (type) {
             case Chart:
                 return ChartFragment.newFragment(mValues);

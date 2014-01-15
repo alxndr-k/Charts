@@ -59,10 +59,10 @@ public class PreferencesFragment extends ListFragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         mListView = getListView();
         mListView.setDivider(null);
         setEmptyText(getString(R.string.preferences_no_items));
-        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
