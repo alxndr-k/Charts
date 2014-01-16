@@ -14,13 +14,25 @@ import java.util.Random;
 
 public class ChartActivity extends Activity implements FragmentManagerInterface {
 
-    private ArrayList<Integer> mValues = generateValues();
+    private static final String SAVED_VALUES = "SAVED_VALUES";
+    private ArrayList<Integer> mValues;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState == null) show(FragmentManagerInterface.Type.Chart);
+        if (savedInstanceState == null) {
+            mValues = generateValues();
+            show(FragmentManagerInterface.Type.Chart);
+        } else {
+            mValues = savedInstanceState.getIntegerArrayList(SAVED_VALUES);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putIntegerArrayList(SAVED_VALUES, mValues);
     }
 
     @Override
