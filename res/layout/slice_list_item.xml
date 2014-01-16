@@ -30,6 +30,7 @@
             android:paddingRight="0dp"
             android:clickable="true"
             android:background="@android:drawable/ic_menu_delete"
+            android:contentDescription="@string/preferences_remove_description"
             />
 
 </LinearLayout>

@@ -95,7 +95,7 @@ public class PreferencesFragment extends ListFragment {
     }
 
     private void addWithAnimation() {
-        mAdapter.add(Constants.DEFAULT_VALUE);
+        mAdapter.add();
         ViewTreeObserver observer = mListView.getViewTreeObserver();
         observer.addOnPreDrawListener(new AddOnPreDrawListener(observer));
     }
@@ -196,9 +196,9 @@ public class PreferencesFragment extends ListFragment {
             }
         }
 
-        public void add(int value) {
-            sum += value;
-            values.add(value);
+        public void add() {
+            sum += Constants.DEFAULT_VALUE;
+            values.add(Constants.DEFAULT_VALUE);
             ids.add(++nextId);
             notifyDataSetChanged();
         }
