@@ -14,7 +14,7 @@ import java.util.Random;
 public class PieChart extends View {
 
     private static final int ANIMATION_DURATION_APPEARANCE = 1000;
-    private static final int INNER_PADDING = 90;
+    private static final int INNER_PADDING = 100;
     private final String NO_DATA_MESSAGE = getResources().getString(R.string.chart_no_data_to_build);
 
     private boolean mDrawValues = true;
@@ -54,9 +54,9 @@ public class PieChart extends View {
             int total = 0;
             for (int value : values) total += value;
 
-            int alignment = 360;
+            float alignment = 360.0f;
             for (int i = 0; i < values.size() - 1; ++i) {
-                int value = 360 * values.get(i) / total;
+                float value = 360.0f * values.get(i) / total;
                 alignment -= value;
                 mValues.add(new Slice(value));
             }
@@ -93,7 +93,7 @@ public class PieChart extends View {
     }
 
     private void drawChart(Canvas canvas) {
-        int startAngle = 0;
+        float startAngle = 0;
         for (Slice slice : mValues) {
             mPaint.setColor(slice.color);
             float sweep = slice.value * mAppearance;
@@ -106,7 +106,7 @@ public class PieChart extends View {
         }
     }
 
-    private void drawValues(Canvas canvas, int startAngle, int value) {
+    private void drawValues(Canvas canvas, float startAngle, float value) {
         mPaint.setColor(Color.WHITE);
         double angle = Math.toRadians(startAngle + value / 2);
         float radius = mPieRect.width() / 2;
@@ -144,10 +144,10 @@ public class PieChart extends View {
 
         private static final Random sRand = new Random();
 
-        private int value;
+        private float value;
         private int color;
 
-        public Slice(int value) {
+        public Slice(float value) {
             this.value = value;
             this.color = getColor();
         }
