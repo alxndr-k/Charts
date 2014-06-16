@@ -19,13 +19,12 @@ import java.util.List;
 
 public class PreferencesFragment extends ListFragment {
 
-    private static final int ANIMATION_DURATION = 500;
-
     private static final String ARG_VALUES = "ARG_VALUES";
 
     private FragmentManagerInterface mManager;
     private ListView mListView;
     private SeekAdapter mAdapter;
+    private MenuItem mAdd;
 
     private SparseArray<Rect> mTops = new SparseArray<Rect>(Constants.MAX_VALUES_COUNT);
     private SparseArray<BitmapDrawable> mSnaps = new SparseArray<BitmapDrawable>(Constants.MAX_VALUES_COUNT);
@@ -74,6 +73,7 @@ public class PreferencesFragment extends ListFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.preferences, menu);
+        mAdd = menu.findItem(R.id.add);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -199,15 +199,16 @@ public class PreferencesFragment extends ListFragment {
                 mSnaps.remove(key);
             }
 
-            mListView.setEnabled(true);
+            mListView.setEnabled(false);
+            mAdd.setEnabled(false);
             AnimatorSet set = new AnimatorSet();
-            set.setDuration(ANIMATION_DURATION);
             set.playTogether(animators);
             set.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mCellBitmapDrawables.clear();
                     mListView.setEnabled(true);
+                    mAdd.setEnabled(true);
+                    mCellBitmapDrawables.clear();
                     mListView.invalidate();
                 }
             });
