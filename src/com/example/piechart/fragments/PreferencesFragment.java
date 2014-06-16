@@ -244,7 +244,7 @@ public class PreferencesFragment extends ListFragment {
                     int childHeight = child.getHeight() + mListView.getDividerHeight();
                     int oldTop = newTop + (i > 0 ? childHeight : -childHeight);
                     child.setTranslationY(oldTop - newTop);
-                    child.animate().setDuration(ANIMATION_DURATION).translationY(0);
+                    child.animate().translationY(0);
                 }
             }
             mTops.clear();
