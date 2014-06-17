@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -25,6 +26,16 @@ public class AnimatedListView extends ListView {
 
     public AnimatedListView(Context context) {
         super(context);
+    }
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        super.dispatchDraw(canvas);
+        if (mCellBitmapDrawables.size() > 0) {
+            for (Drawable drawable : mCellBitmapDrawables) {
+                drawable.draw(canvas);
+            }
+        }
     }
 
     public void addWithAnimation() {
@@ -95,7 +106,7 @@ public class AnimatedListView extends ListView {
                 int key = mTops.keyAt(i);
                 Rect startBounds = mTops.get(key);
                 Rect endBounds = new Rect(startBounds);
-                endBounds.offset(0, startBounds.top - startBounds.bottom);
+                endBounds.offset(0, startBounds.bottom - startBounds.top);
                 BitmapDrawable drawable = mSnaps.get(key);
 
                 ObjectAnimator animator = ObjectAnimator.ofObject(drawable, "bounds", sBoundsEvaluator, startBounds, endBounds);
