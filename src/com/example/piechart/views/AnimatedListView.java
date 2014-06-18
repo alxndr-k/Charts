@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ListView;
 import com.example.piechart.Constants;
-import com.example.piechart.SlicesAdapter;
+import com.example.piechart.views.adapters.SlicesAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

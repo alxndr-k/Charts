@@ -1,4 +1,4 @@
-package com.example.piechart;
+package com.example.piechart.views.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import com.example.piechart.Constants;
+import com.example.piechart.R;
 
 import java.util.ArrayList;
 

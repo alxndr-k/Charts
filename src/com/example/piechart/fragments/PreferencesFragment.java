@@ -8,7 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.example.piechart.Constants;
 import com.example.piechart.R;
-import com.example.piechart.SlicesAdapter;
+import com.example.piechart.views.adapters.SlicesAdapter;
 import com.example.piechart.views.AnimatedListView;
 
 import java.util.ArrayList;
@@ -20,7 +20,6 @@ public class PreferencesFragment extends Fragment implements SlicesAdapter.OnRem
     private FragmentManagerInterface mManager;
     private AnimatedListView mListView;
     private SlicesAdapter mAdapter;
-    private MenuItem mAddItem;
 
     public PreferencesFragment() {
     }
@@ -65,7 +64,6 @@ public class PreferencesFragment extends Fragment implements SlicesAdapter.OnRem
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.preferences, menu);
-        mAddItem = menu.findItem(R.id.add);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
