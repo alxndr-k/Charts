@@ -5,24 +5,15 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    >
+    android:gravity="center">
 
-    <com.example.piechart.charts.PieChart
+    <com.example.piechart.views.charts.PieChart
         android:id="@+id/chart"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:padding="10dp"
-        app:showValues="true"
-        />
-
-    <Button
-        android:id="@+id/refresh"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/pie_chart_refresh"
-        />
+        app:showValues="true"/>
 
 </LinearLayout>
 

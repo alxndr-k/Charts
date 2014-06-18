@@ -1,4 +1,4 @@
-package com.example.piechart.charts;
+package com.example.piechart.views.charts;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;

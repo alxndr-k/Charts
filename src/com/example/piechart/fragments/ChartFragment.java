@@ -5,7 +5,7 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.view.*;
 import com.example.piechart.R;
-import com.example.piechart.charts.PieChart;
+import com.example.piechart.views.charts.PieChart;
 
 import java.util.ArrayList;
 
@@ -49,8 +49,6 @@ public class ChartFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.chart_fragment, container, false);
 
-        view.findViewById(R.id.refresh).setOnClickListener(mRefreshChartOnClickListener);
-
         ArrayList<Integer> values = getArguments().getIntegerArrayList(ARG_VALUES);
         mChart = (PieChart) view.findViewById(R.id.chart);
         mChart.apply(values);
@@ -70,15 +68,10 @@ public class ChartFragment extends Fragment {
             case R.id.go_preferences:
                 mManager.show(FragmentManagerInterface.Type.Preferences);
                 return true;
+            case R.id.refresh:
+                mChart.refresh();
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    private View.OnClickListener mRefreshChartOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mChart.refresh();
-        }
-    };
 }
