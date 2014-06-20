@@ -102,14 +102,18 @@ public class AnimatedListView extends ListView {
         public boolean onPreDraw() {
             getViewTreeObserver().removeOnPreDrawListener(this);
 
-            ArrayList<Animator> animators = new ArrayList<Animator>();
-            View newChild = getChildAt(0);
-            PropertyValuesHolder pvhScaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 0, 1);
-            PropertyValuesHolder pvhTraslationY = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, newChild.getTop() - newChild.getHeight() / 2, newChild.getTop());
-            animators.add(ObjectAnimator.ofPropertyValuesHolder(newChild, pvhScaleY, pvhTraslationY));
-
             int firstVisiblePosition = getFirstVisiblePosition();
-            for (int i = 1; i < getChildCount(); ++i) {
+            int i = 0;
+            ArrayList<Animator> animators = new ArrayList<Animator>();
+            if (firstVisiblePosition == 0) {
+                i = 1;
+                View newChild = getChildAt(0);
+                PropertyValuesHolder pvhScaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 0, 1);
+                PropertyValuesHolder pvhTranslationY = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, newChild.getTranslationY() - newChild.getHeight() / 2, newChild.getTranslationY());
+                animators.add(ObjectAnimator.ofPropertyValuesHolder(newChild, pvhScaleY, pvhTranslationY));
+            }
+
+            while (i < getChildCount()) {
                 int id = (int) getAdapter().getItemId(firstVisiblePosition + i);
                 Rect oldBounds = mTops.get(id);
                 View child = getChildAt(i);
@@ -118,11 +122,12 @@ public class AnimatedListView extends ListView {
                 if (oldBounds != null) {
                     delta = oldBounds.top - newTop;
                 } else {
-                    delta = child.getHeight();
+                    delta = child.getTop() - child.getHeight();
                 }
                 animators.add(ObjectAnimator.ofFloat(child, View.TRANSLATION_Y, delta, 0));
                 mTops.delete(id);
                 mSnaps.delete(id);
+                i++;
             }
 
             if (mTops.size() > 0) {

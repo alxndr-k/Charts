@@ -54,7 +54,6 @@ public class PreferencesFragment extends Fragment implements SlicesAdapter.OnRem
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mListView = new AnimatedListView(getActivity());
-        mListView.setDivider(null);
         mListView.setEmptyView(getEmptyView());
         mAdapter = new SlicesAdapter(getActivity(), this, getArguments().getIntegerArrayList(ARG_VALUES));
         mListView.setAdapter(mAdapter);
