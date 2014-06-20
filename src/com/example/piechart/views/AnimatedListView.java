@@ -21,7 +21,8 @@ public class AnimatedListView extends ListView {
     private SparseArray<Rect> mTops = new SparseArray<Rect>(Constants.MAX_VALUES_COUNT);
     private SparseArray<BitmapDrawable> mSnaps = new SparseArray<BitmapDrawable>(Constants.MAX_VALUES_COUNT);
 
-    private Drawable mDrawable; // view that not exist during adding or removing
+    private Drawable mDrawable; // view's snapshot that not exist during adding or removing, use for animation
+    private long mNextToRemoveItem;
 
     public AnimatedListView(Context context) {
         super(context);
@@ -43,12 +44,11 @@ public class AnimatedListView extends ListView {
     }
 
     public void removeWithAnimation(final View viewToRemove) {
-        saveViews(viewToRemove, false);
-        Rect startBounds = new Rect(new Rect(viewToRemove.getLeft(), viewToRemove.getTop(), viewToRemove.getRight(), viewToRemove.getBottom()));
-        Rect endBounds = new Rect(startBounds);
-        endBounds.bottom = endBounds.top;
-        animateDrawable(getDrawableFromView(viewToRemove), startBounds, endBounds);
+        mNextToRemoveItem = getPositionForView(viewToRemove);
+        mDrawable = getDrawableFromView(viewToRemove);
+        mDrawable.setBounds(new Rect(new Rect(viewToRemove.getLeft(), viewToRemove.getTop(), viewToRemove.getRight(), viewToRemove.getBottom())));
 
+        saveViews(viewToRemove, false);
         int position = getPositionForView(viewToRemove);
         ((SlicesAdapter) getAdapter()).remove(position);
         ViewTreeObserver observer = getViewTreeObserver();
@@ -163,6 +163,21 @@ public class AnimatedListView extends ListView {
             getViewTreeObserver().removeOnPreDrawListener(this);
 
             int firstVisiblePosition = getFirstVisiblePosition();
+
+            Rect startBounds = mDrawable.getBounds();
+            Rect endBounds = new Rect(startBounds);
+            View view = getChildAt((int) (mNextToRemoveItem - firstVisiblePosition));
+            if (view != null) {
+                endBounds.top = view.getTop();
+            } else {
+                view = getChildAt((int) (mNextToRemoveItem - firstVisiblePosition) - 1);
+                if (view != null) {
+                    endBounds.top = view.getBottom();
+                }
+            }
+            endBounds.bottom = endBounds.top;
+            animateDrawable(mDrawable, startBounds, endBounds);
+
             for (int i = 0; i < getChildCount(); ++i) {
                 View child = getChildAt(i);
                 int position = firstVisiblePosition + i;
