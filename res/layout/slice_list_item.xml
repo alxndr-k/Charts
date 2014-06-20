@@ -4,23 +4,19 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:gravity="center"
-              android:padding="@dimen/padding_middle"
-              android:background="@drawable/background_with_divider"
-        >
+              android:padding="@dimen/padding_middle">
 
     <TextView
         android:id="@+id/value"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        />
+        android:gravity="center"/>
 
     <SeekBar
             android:id="@+id/seek"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            />
+            android:layout_weight="1"/>
 
     <ImageView
             android:id="@+id/remove"
@@ -30,7 +26,6 @@
             android:paddingRight="0dp"
             android:clickable="true"
             android:background="@android:drawable/ic_menu_delete"
-            android:contentDescription="@string/preferences_remove_description"
-            />
+            android:contentDescription="@string/preferences_remove_description"/>
 
 </LinearLayout>

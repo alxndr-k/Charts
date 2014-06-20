@@ -15,14 +15,13 @@ import com.example.piechart.Constants;
 import com.example.piechart.views.adapters.SlicesAdapter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class AnimatedListView extends ListView {
 
     private SparseArray<Rect> mTops = new SparseArray<Rect>(Constants.MAX_VALUES_COUNT);
     private SparseArray<BitmapDrawable> mSnaps = new SparseArray<BitmapDrawable>(Constants.MAX_VALUES_COUNT);
-    private List<BitmapDrawable> mCellBitmapDrawables = new ArrayList<BitmapDrawable>(Constants.MAX_VALUES_COUNT);
 
+    private Drawable mDrawable; // view that not exist during adding or removing
 
     public AnimatedListView(Context context) {
         super(context);
@@ -31,10 +30,8 @@ public class AnimatedListView extends ListView {
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
-        if (mCellBitmapDrawables.size() > 0) {
-            for (Drawable drawable : mCellBitmapDrawables) {
-                drawable.draw(canvas);
-            }
+        if (mDrawable != null) {
+            mDrawable.draw(canvas);
         }
     }
 
@@ -47,10 +44,36 @@ public class AnimatedListView extends ListView {
 
     public void removeWithAnimation(final View viewToRemove) {
         saveViews(viewToRemove, false);
+        Rect startBounds = new Rect(new Rect(viewToRemove.getLeft(), viewToRemove.getTop(), viewToRemove.getRight(), viewToRemove.getBottom()));
+        Rect endBounds = new Rect(startBounds);
+        endBounds.bottom = endBounds.top;
+        animateDrawable(getDrawableFromView(viewToRemove), startBounds, endBounds);
+
         int position = getPositionForView(viewToRemove);
         ((SlicesAdapter) getAdapter()).remove(position);
         ViewTreeObserver observer = getViewTreeObserver();
         observer.addOnPreDrawListener(new RemoveOnPreDrawListener());
+    }
+
+    private void animateDrawable(Drawable drawable, Rect startBounds, Rect endBounds) {
+        mDrawable = drawable;
+        ObjectAnimator animator = ObjectAnimator.ofObject(mDrawable, "bounds", sBoundsEvaluator, startBounds, endBounds);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            private Rect lastBound = null;
+            private Rect currentBound = new Rect();
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                Rect bounds = (Rect) valueAnimator.getAnimatedValue();
+                currentBound.set(bounds);
+                if (lastBound != null) {
+                    currentBound.union(lastBound);
+                }
+                lastBound = bounds;
+                invalidate(currentBound);
+            }
+        });
+        animator.start();
     }
 
     private void saveViews(View ignoreView, boolean saveSnap) {
@@ -81,9 +104,9 @@ public class AnimatedListView extends ListView {
 
             ArrayList<Animator> animators = new ArrayList<Animator>();
             View newChild = getChildAt(0);
-            PropertyValuesHolder pvhAlpha = PropertyValuesHolder.ofFloat(View.ALPHA, 0.0f, 1.0f);
-            PropertyValuesHolder pvhTranslateX = PropertyValuesHolder.ofFloat(View.TRANSLATION_X, newChild.getWidth() * 0.2f, 0.0f);
-            animators.add(ObjectAnimator.ofPropertyValuesHolder(newChild, pvhAlpha, pvhTranslateX));
+            PropertyValuesHolder pvhScaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 0, 1);
+            PropertyValuesHolder pvhTraslationY = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, newChild.getTop() - newChild.getHeight() / 2, newChild.getTop());
+            animators.add(ObjectAnimator.ofPropertyValuesHolder(newChild, pvhScaleY, pvhTraslationY));
 
             int firstVisiblePosition = getFirstVisiblePosition();
             for (int i = 1; i < getChildCount(); ++i) {
@@ -102,35 +125,16 @@ public class AnimatedListView extends ListView {
                 mSnaps.delete(id);
             }
 
-            for (int i = 0; i < mTops.size(); ++i) {
-                int key = mTops.keyAt(i);
+            if (mTops.size() > 0) {
+                int key = mTops.keyAt(0);
                 Rect startBounds = mTops.get(key);
                 Rect endBounds = new Rect(startBounds);
                 endBounds.offset(0, startBounds.bottom - startBounds.top);
-                BitmapDrawable drawable = mSnaps.get(key);
-
-                ObjectAnimator animator = ObjectAnimator.ofObject(drawable, "bounds", sBoundsEvaluator, startBounds, endBounds);
-                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    private Rect mLastBound = null;
-                    private Rect mCurrentBound = new Rect();
-
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                        Rect bounds = (Rect) valueAnimator.getAnimatedValue();
-                        mCurrentBound.set(bounds);
-                        if (mLastBound != null) {
-                            mCurrentBound.union(mLastBound);
-                        }
-                        mLastBound = bounds;
-                        invalidate(mCurrentBound);
-                    }
-                });
-                mCellBitmapDrawables.add(drawable);
-                animators.add(animator);
-                mTops.remove(key);
-                mSnaps.remove(key);
+                animateDrawable(mSnaps.get(key), startBounds, endBounds);
             }
 
+            mTops.clear();
+            mSnaps.clear();
             setEnabled(false);
             AnimatorSet set = new AnimatorSet();
             set.playTogether(animators);
@@ -138,7 +142,7 @@ public class AnimatedListView extends ListView {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     setEnabled(true);
-                    mCellBitmapDrawables.clear();
+                    mDrawable = null;
                     invalidate();
                 }
             });
@@ -169,7 +173,13 @@ public class AnimatedListView extends ListView {
                     int childHeight = child.getHeight() + getDividerHeight();
                     int oldTop = newTop + (i > 0 ? childHeight : -childHeight);
                     child.setTranslationY(oldTop - newTop);
-                    child.animate().translationY(0);
+                    child.animate().translationY(0).setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            mDrawable = null;
+                        }
+                    });
                 }
             }
             mTops.clear();
@@ -177,7 +187,7 @@ public class AnimatedListView extends ListView {
         }
     }
 
-    static final TypeEvaluator<Rect> sBoundsEvaluator = new TypeEvaluator<Rect>() {
+    private static final TypeEvaluator<Rect> sBoundsEvaluator = new TypeEvaluator<Rect>() {
         public Rect evaluate(float fraction, Rect startValue, Rect endValue) {
             return new Rect(interpolate(startValue.left, endValue.left, fraction),
                     interpolate(startValue.top, endValue.top, fraction),
