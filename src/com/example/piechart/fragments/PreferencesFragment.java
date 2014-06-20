@@ -8,6 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.example.piechart.Constants;
 import com.example.piechart.R;
+import com.example.piechart.views.adapters.Slice;
 import com.example.piechart.views.adapters.SlicesAdapter;
 import com.example.piechart.views.AnimatedListView;
 
@@ -24,9 +25,9 @@ public class PreferencesFragment extends Fragment implements SlicesAdapter.OnRem
     public PreferencesFragment() {
     }
 
-    public static PreferencesFragment newFragment(ArrayList<Integer> values) {
+    public static PreferencesFragment newFragment(ArrayList<Slice> values) {
         Bundle args = new Bundle();
-        args.putIntegerArrayList(ARG_VALUES, values);
+        args.putSerializable(ARG_VALUES, values);
 
         PreferencesFragment fragment = new PreferencesFragment();
         fragment.setArguments(args);
@@ -55,7 +56,7 @@ public class PreferencesFragment extends Fragment implements SlicesAdapter.OnRem
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mListView = new AnimatedListView(getActivity());
         mListView.setEmptyView(getEmptyView());
-        mAdapter = new SlicesAdapter(getActivity(), this, getArguments().getIntegerArrayList(ARG_VALUES));
+        mAdapter = new SlicesAdapter(getActivity(), this, (ArrayList<Slice>) getArguments().getSerializable(ARG_VALUES));
         mListView.setAdapter(mAdapter);
         return mListView;
     }

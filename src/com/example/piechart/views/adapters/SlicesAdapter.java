@@ -22,19 +22,19 @@ public class SlicesAdapter extends BaseAdapter {
 
     private OnRemoveListener mRemoveListener;
 
-    private ArrayList<Integer> mValues = new ArrayList<Integer>(Constants.MAX_VALUES_COUNT);
+    private ArrayList<Slice> mValues = new ArrayList<Slice>(Constants.MAX_VALUES_COUNT);
     private ArrayList<Integer> mStableIds = new ArrayList<Integer>(Constants.MAX_VALUES_COUNT); // array with unique id, need that for animation
 
     private int mNextId; // unique id for next item to add
     private int mSum;
 
-    public SlicesAdapter(Context context, OnRemoveListener listener, ArrayList<Integer> values) {
+    public SlicesAdapter(Context context, OnRemoveListener listener, ArrayList<Slice> values) {
         mInflater = LayoutInflater.from(context);
         mRemoveListener = listener;
         mValues = values;
         for (mNextId = 0; mNextId < mValues.size(); ++mNextId) {
             mStableIds.add(mNextId);
-            mSum += mValues.get(mNextId);
+            mSum += mValues.get(mNextId).value;
         }
     }
 
@@ -44,7 +44,7 @@ public class SlicesAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public Slice getItem(int position) {
         return mValues.get(position);
     }
 
@@ -75,22 +75,22 @@ public class SlicesAdapter extends BaseAdapter {
         }
 
         holder.seek.setTag(position);
-        holder.seek.setProgress((Integer) getItem(position));
+        holder.seek.setProgress((int) getItem(position).value);
 
-        holder.value.setText(String.format("%.1f%%", mValues.get(position) * 100.0 / mSum));
+        holder.value.setText(String.format("%.1f%%", mValues.get(position).value * 100.0 / mSum));
 
         return view;
     }
 
     public void add() {
         mSum += Constants.DEFAULT_VALUE;
-        mValues.add(0, Constants.DEFAULT_VALUE);
+        mValues.add(0, new Slice(Constants.DEFAULT_VALUE));
         mStableIds.add(0, ++mNextId);
         notifyDataSetChanged();
     }
 
     public void remove(int position) {
-        mSum -= mValues.get(position);
+        mSum -= mValues.get(position).value;
         mValues.remove(position);
         mStableIds.remove(position);
         notifyDataSetChanged();
@@ -100,8 +100,8 @@ public class SlicesAdapter extends BaseAdapter {
         @Override
         public void onProgressChanged(SeekBar seekBar, int value, boolean fromUser) {
             int index = (Integer) seekBar.getTag();
-            mSum = mSum - mValues.get(index) + value;
-            mValues.set(index, value);
+            mSum = (int) (mSum - mValues.get(index).value + value);
+            mValues.get(index).value = value;
         }
 
         @Override

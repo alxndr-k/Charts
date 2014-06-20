@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.view.*;
 import com.example.piechart.R;
+import com.example.piechart.views.adapters.Slice;
 import com.example.piechart.views.charts.PieChart;
 
 import java.util.ArrayList;
@@ -18,9 +19,9 @@ public class ChartFragment extends Fragment {
 
     public ChartFragment() {}
 
-    public static ChartFragment newFragment(ArrayList<Integer> values) {
+    public static ChartFragment newFragment(ArrayList<Slice> values) {
         Bundle args = new Bundle();
-        args.putIntegerArrayList(ARG_VALUES, values);
+        args.putSerializable(ARG_VALUES, values);
 
         ChartFragment fragment = new ChartFragment();
         fragment.setArguments(args);
@@ -49,9 +50,9 @@ public class ChartFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.chart_fragment, container, false);
 
-        ArrayList<Integer> values = getArguments().getIntegerArrayList(ARG_VALUES);
+        ArrayList<Slice> values = (ArrayList<Slice>) getArguments().getSerializable(ARG_VALUES);
         mChart = (PieChart) view.findViewById(R.id.chart);
-        mChart.apply(values);
+        mChart.apply(values, savedInstanceState == null);
 
         return view;
     }
@@ -69,7 +70,7 @@ public class ChartFragment extends Fragment {
                 mManager.show(FragmentManagerInterface.Type.Preferences);
                 return true;
             case R.id.refresh:
-                mChart.refresh();
+                mChart.refresh(true);
             default:
                 return super.onOptionsItemSelected(item);
         }

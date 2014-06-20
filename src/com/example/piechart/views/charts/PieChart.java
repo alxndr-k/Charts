@@ -1,15 +1,15 @@
 package com.example.piechart.views.charts;
 
-import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.*;
 import android.util.AttributeSet;
 import android.view.View;
 import com.example.piechart.R;
+import com.example.piechart.views.adapters.Slice;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class PieChart extends View {
 
@@ -23,13 +23,14 @@ public class PieChart extends View {
 
     private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private RectF mPieRect;
-    private ObjectAnimator mAppearanceAnimator = ObjectAnimator.ofFloat(this, "appearance", 1);
+    private ValueAnimator mAppearanceAnimator = ValueAnimator.ofFloat(0, 1);
 
     private float mAppearance; // indicate appearance progress
 
     public PieChart(Context context, AttributeSet attrs) {
         super(context, attrs);
         mAppearanceAnimator.setDuration(ANIMATION_DURATION_APPEARANCE);
+        mAppearanceAnimator.addUpdateListener(mAnimationListener);
         mPaint.setTextAlign(Paint.Align.CENTER);
 
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.PieChart, 0, 0);
@@ -43,28 +44,35 @@ public class PieChart extends View {
 
     }
 
-    public void refresh() {
-        mAppearanceAnimator.start();
+    public void refresh(boolean animate) {
+        if (animate) {
+            mAppearanceAnimator.start();
+        } else {
+            mAppearance = 1;
+            invalidate();
+        }
+
     }
 
-    public void apply(ArrayList<Integer> values) {
+    public void apply(ArrayList<Slice> values, boolean animate) {
         mValues.clear();
 
         if (values != null && values.size() > 0) {
             int total = 0;
-            for (int value : values) total += value;
+            for (Slice slice : values) total += slice.value;
 
             float alignment = 360.0f;
             for (int i = 0; i < values.size() - 1; ++i) {
-                float value = 360.0f * values.get(i) / total;
+                float value = 360.0f * values.get(i).value / total;
                 alignment -= value;
-                mValues.add(new Slice(value));
+                mValues.add(new Slice(value, values.get(i).color));
             }
 
-            mValues.add(new Slice(alignment));
+            int last = values.size() - 1;
+            mValues.add(new Slice(alignment, values.get(last).color));
         }
 
-        refresh();
+        refresh(animate);
     }
 
     @Override
@@ -128,41 +136,11 @@ public class PieChart extends View {
         canvas.drawText(NO_DATA_MESSAGE, getWidth() / 2, getHeight() / 2, mPaint);
     }
 
-    @SuppressWarnings("unused")
-    private void setAppearance(float appearance) {
-        mAppearance = appearance;
-        invalidate();
-    }
-
-    private static class Slice {
-
-        private static final int COLOR_OFFSET = 64;
-        private static final int COLOR_MAX = 255;
-        private static final int COLOR_RANDOMIZE = COLOR_MAX - COLOR_OFFSET;
-
-        private static final int BYTE_SHIFT = 8;
-
-        private static final Random sRand = new Random();
-
-        private float value;
-        private int color;
-
-        public Slice(float value) {
-            this.value = value;
-            this.color = getColor();
+    private ValueAnimator.AnimatorUpdateListener mAnimationListener = new ValueAnimator.AnimatorUpdateListener() {
+        @Override
+        public void onAnimationUpdate(ValueAnimator animation) {
+            mAppearance = (Float) animation.getAnimatedValue();
+            invalidate();
         }
-
-        private int getColor() {
-            int t = getRandomColor() << (BYTE_SHIFT * 3);
-            int r = getRandomColor() << (BYTE_SHIFT * 2);
-            int g = getRandomColor() << BYTE_SHIFT;
-            int b = getRandomColor();
-
-            return t | r | g | b;
-        }
-
-        private int getRandomColor() {
-            return COLOR_OFFSET + sRand.nextInt(COLOR_RANDOMIZE);
-        }
-    }
+    };
 }

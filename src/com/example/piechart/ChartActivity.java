@@ -8,6 +8,7 @@ import android.os.Bundle;
 import com.example.piechart.fragments.ChartFragment;
 import com.example.piechart.fragments.FragmentManagerInterface;
 import com.example.piechart.fragments.PreferencesFragment;
+import com.example.piechart.views.adapters.Slice;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -15,7 +16,7 @@ import java.util.Random;
 public class ChartActivity extends Activity implements FragmentManagerInterface {
 
     private static final String SAVED_VALUES = "SAVED_VALUES";
-    private ArrayList<Integer> mValues;
+    private ArrayList<Slice> mValues;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,14 +26,14 @@ public class ChartActivity extends Activity implements FragmentManagerInterface 
             mValues = generateValues();
             show(FragmentManagerInterface.Type.Chart);
         } else {
-            mValues = savedInstanceState.getIntegerArrayList(SAVED_VALUES);
+            mValues = (ArrayList<Slice>) savedInstanceState.getSerializable(SAVED_VALUES);
         }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putIntegerArrayList(SAVED_VALUES, mValues);
+        outState.putSerializable(SAVED_VALUES, mValues);
     }
 
     @Override
@@ -75,12 +76,12 @@ public class ChartActivity extends Activity implements FragmentManagerInterface 
         }
     }
 
-    private static ArrayList<Integer> generateValues() {
+    private static ArrayList<Slice> generateValues() {
         Random rand = new Random();
 
         int count = rand.nextInt(Constants.MAX_VALUES_COUNT) + 1;
-        ArrayList<Integer> values = new ArrayList<Integer>(count);
-        for (int i = 0; i < count; ++i) values.add(rand.nextInt(Constants.MAX_VALUE));
+        ArrayList<Slice> values = new ArrayList<Slice>(count);
+        for (int i = 0; i < count; ++i) values.add(new Slice(rand.nextInt(Constants.MAX_VALUE)));
 
         return values;
     }
