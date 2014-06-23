@@ -59,7 +59,7 @@ public class SlicesAdapter extends BaseAdapter {
         ViewHolder holder;
 
         if (view == null) {
-            view = mInflater.inflate(R.layout.slice_list_item, parent, false);
+            view = mInflater.inflate(R.layout.li_slice, parent, false);
 
             SeekBar seek = (SeekBar) view.findViewById(R.id.seek);
             seek.setOnSeekBarChangeListener(mSeekChangeListener);

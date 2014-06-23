@@ -27,6 +27,10 @@ public class PieChart extends View {
 
     private float mAppearance; // indicate appearance progress
 
+    public PieChart(Context context) {
+        this(context, null);
+    }
+
     public PieChart(Context context, AttributeSet attrs) {
         super(context, attrs);
         mAppearanceAnimator.setDuration(ANIMATION_DURATION_APPEARANCE);
@@ -35,13 +39,12 @@ public class PieChart extends View {
 
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.PieChart, 0, 0);
         try {
-            mDrawValues = a.getBoolean(R.styleable.PieChart_showValues, false);
+            mDrawValues = a.getBoolean(R.styleable.PieChart_showValues, true);
             int textSize = a.getDimensionPixelSize(R.styleable.PieChart_textSize, getResources().getDimensionPixelOffset(R.dimen.font_size_small));
             mPaint.setTextSize(textSize);
         } finally {
             a.recycle();
         }
-
     }
 
     public void refresh(boolean animate) {

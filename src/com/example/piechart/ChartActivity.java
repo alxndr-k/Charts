@@ -24,9 +24,17 @@ public class ChartActivity extends Activity implements FragmentManagerInterface 
 
         if (savedInstanceState == null) {
             mValues = generateValues();
-            show(FragmentManagerInterface.Type.Chart);
         } else {
             mValues = (ArrayList<Slice>) savedInstanceState.getSerializable(SAVED_VALUES);
+        }
+
+        setContentView(R.layout.a_main);
+        removeFragments();
+        if (App.isLandscape()) {
+            show(Type.Preferences, R.id.holder_right);
+            show(Type.Chart, R.id.holder_left);
+        } else {
+            show(Type.Chart, R.id.holder);
         }
     }
 
@@ -38,9 +46,13 @@ public class ChartActivity extends Activity implements FragmentManagerInterface 
 
     @Override
     public void show(Type type) {
+        show(type, R.id.holder);
+    }
+
+    private void show(Type type, int holder) {
         FragmentManager manager = getFragmentManager();
 
-        Fragment fragment = manager.findFragmentByTag(type.toString());
+        Fragment fragment = null;//manager.findFragmentByTag(type.name());
         if (fragment == null) {
             fragment = newFragment(type);
             if (fragment == null) return;
@@ -48,7 +60,7 @@ public class ChartActivity extends Activity implements FragmentManagerInterface 
 
         FragmentTransaction transaction = manager.beginTransaction();
         addAnimation(transaction, type);
-        transaction.replace(android.R.id.content, fragment, type.toString());
+        transaction.replace(holder, fragment, type.name());
         transaction.commit();
     }
 
@@ -63,7 +75,21 @@ public class ChartActivity extends Activity implements FragmentManagerInterface 
         }
     }
 
+    private void removeFragments() {
+        FragmentManager manager = getFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+
+        for (Type type : Type.values()) {
+            Fragment fragment = manager.findFragmentByTag(type.name());
+            if (fragment != null) transaction.remove(fragment);
+        }
+
+        transaction.commit();
+    }
+
     private static void addAnimation(FragmentTransaction transaction, Type type) {
+        if (App.isLandscape()) return;
+
         switch (type) {
             case Chart:
                 transaction.setCustomAnimations(R.animator.view_enter_left, R.animator.view_exit_left);

@@ -3,6 +3,7 @@ package com.example.piechart.fragments;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.*;
 import com.example.piechart.R;
 import com.example.piechart.views.adapters.Slice;
@@ -16,6 +17,8 @@ public class ChartFragment extends Fragment {
 
     private FragmentManagerInterface mManager;
     private PieChart mChart;
+
+    private ArrayList<Slice> mValues;
 
     public ChartFragment() {}
 
@@ -48,13 +51,14 @@ public class ChartFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.chart_fragment, container, false);
+        mValues = (ArrayList<Slice>) getArguments().getSerializable(ARG_VALUES);
+        mChart = new PieChart(inflater.getContext());
+        mChart.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        int padding = getResources().getDimensionPixelOffset(R.dimen.padding_middle);
+        mChart.setPadding(padding, padding, padding, padding);
+        mChart.apply(mValues, savedInstanceState == null);
 
-        ArrayList<Slice> values = (ArrayList<Slice>) getArguments().getSerializable(ARG_VALUES);
-        mChart = (PieChart) view.findViewById(R.id.chart);
-        mChart.apply(values, savedInstanceState == null);
-
-        return view;
+        return mChart;
     }
 
     @Override
@@ -70,7 +74,7 @@ public class ChartFragment extends Fragment {
                 mManager.show(FragmentManagerInterface.Type.Preferences);
                 return true;
             case R.id.refresh:
-                mChart.refresh(true);
+                mChart.apply(mValues, true);
             default:
                 return super.onOptionsItemSelected(item);
         }
