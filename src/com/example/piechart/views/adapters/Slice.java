@@ -1,8 +1,9 @@
 package com.example.piechart.views.adapters;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class Slice {
+public class Slice implements Serializable {
 
     private static final int COLOR_OFFSET = 64;
     private static final int COLOR_MAX = 255;
