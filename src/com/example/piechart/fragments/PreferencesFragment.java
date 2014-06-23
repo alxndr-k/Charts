@@ -4,13 +4,12 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.*;
-import android.widget.TextView;
 import android.widget.Toast;
 import com.example.piechart.Constants;
 import com.example.piechart.R;
+import com.example.piechart.views.AnimatedListView;
 import com.example.piechart.views.adapters.Slice;
 import com.example.piechart.views.adapters.SlicesAdapter;
-import com.example.piechart.views.AnimatedListView;
 
 import java.util.ArrayList;
 
@@ -54,11 +53,12 @@ public class PreferencesFragment extends Fragment implements SlicesAdapter.OnRem
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mListView = new AnimatedListView(getActivity());
-        mListView.setEmptyView(getEmptyView());
+        View view = inflater.inflate(R.layout.f_preferences, container, false);
+        mListView = (AnimatedListView) view.findViewById(R.id.list_view);
+        mListView.setEmptyView(view.findViewById(android.R.id.empty));
         mAdapter = new SlicesAdapter(getActivity(), this, (ArrayList<Slice>) getArguments().getSerializable(ARG_VALUES));
         mListView.setAdapter(mAdapter);
-        return mListView;
+        return view;
     }
 
     @Override
@@ -89,12 +89,6 @@ public class PreferencesFragment extends Fragment implements SlicesAdapter.OnRem
     @Override
     public void onRemove(View view) {
         mListView.removeWithAnimation(view);
-    }
-
-    private View getEmptyView() {
-        TextView textView = new TextView(getActivity());
-        textView.setText(getString(R.string.preferences_no_items));
-        return textView;
     }
 
     private void showToast(int message) {

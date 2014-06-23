@@ -3,5 +3,6 @@
     <declare-styleable name="PieChart">
         <attr name="showValues" format="boolean" />
         <attr name="textSize" format="dimension" />
+        <attr name="emptyTextSize" format="dimension" />
     </declare-styleable>
 </resources>

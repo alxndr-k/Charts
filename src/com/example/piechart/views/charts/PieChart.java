@@ -18,6 +18,8 @@ public class PieChart extends View {
     private final String NO_DATA_MESSAGE = getResources().getString(R.string.chart_no_data_to_build);
 
     private boolean mDrawValues = true;
+    private int mTextSize;
+    private int mEmptyTextSize;
 
     private ArrayList<Slice> mValues = new ArrayList<Slice>();
 
@@ -40,8 +42,8 @@ public class PieChart extends View {
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.PieChart, 0, 0);
         try {
             mDrawValues = a.getBoolean(R.styleable.PieChart_showValues, true);
-            int textSize = a.getDimensionPixelSize(R.styleable.PieChart_textSize, getResources().getDimensionPixelOffset(R.dimen.font_size_small));
-            mPaint.setTextSize(textSize);
+            mTextSize = a.getDimensionPixelSize(R.styleable.PieChart_textSize, getResources().getDimensionPixelOffset(R.dimen.font_size_small));
+            mEmptyTextSize = a.getDimensionPixelSize(R.styleable.PieChart_emptyTextSize, getResources().getDimensionPixelOffset(R.dimen.font_size_middle));
         } finally {
             a.recycle();
         }
@@ -119,6 +121,7 @@ public class PieChart extends View {
 
     private void drawValues(Canvas canvas, float startAngle, float value) {
         mPaint.setColor(Color.WHITE);
+        mPaint.setTextSize(mTextSize);
         double angle = Math.toRadians(startAngle + value / 2);
         float radius = mPieRect.width() / 2;
         float x = (float) (radius * Math.cos(angle));
@@ -135,8 +138,9 @@ public class PieChart extends View {
     }
 
     private void drawNoData(Canvas canvas) {
-        mPaint.setColor(Color.WHITE);
-        canvas.drawText(NO_DATA_MESSAGE, getWidth() / 2, getHeight() / 2, mPaint);
+        mPaint.setColor(Color.GRAY);
+        mPaint.setTextSize(mEmptyTextSize);
+        canvas.drawText(NO_DATA_MESSAGE, getWidth() / 2, (canvas.getHeight() - mPaint.descent() - mPaint.ascent()) / 2, mPaint);
     }
 
     private ValueAnimator.AnimatorUpdateListener mAnimationListener = new ValueAnimator.AnimatorUpdateListener() {
