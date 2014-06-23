@@ -52,11 +52,7 @@ public class ChartActivity extends Activity implements FragmentManagerInterface 
     private void show(Type type, int holder) {
         FragmentManager manager = getFragmentManager();
 
-        Fragment fragment = null;//manager.findFragmentByTag(type.name());
-        if (fragment == null) {
-            fragment = newFragment(type);
-            if (fragment == null) return;
-        }
+        Fragment fragment = newFragment(type);
 
         FragmentTransaction transaction = manager.beginTransaction();
         addAnimation(transaction, type);

@@ -1,6 +1,5 @@
 package com.example.piechart.views.adapters;
 
-import java.io.Serializable;
 import java.util.Random;
 
 public class Slice {

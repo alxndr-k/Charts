@@ -3,7 +3,6 @@ package com.example.piechart.fragments;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.*;
 import com.example.piechart.R;
 import com.example.piechart.views.adapters.Slice;
@@ -56,7 +55,7 @@ public class ChartFragment extends Fragment {
         mChart.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         int padding = getResources().getDimensionPixelOffset(R.dimen.padding_middle);
         mChart.setPadding(padding, padding, padding, padding);
-        mChart.apply(mValues, savedInstanceState == null);
+        mChart.apply(mValues, false);
 
         return mChart;
     }
