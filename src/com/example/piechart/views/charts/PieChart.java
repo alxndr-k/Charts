@@ -14,7 +14,9 @@ import java.util.ArrayList;
 
 public class PieChart extends View {
 
-    public interface OnSliceSelectedListener { boolean onSelected(int index); }
+    public interface OnSliceSelectedListener {
+        boolean onSelected(int index);
+    }
 
     private static final int ANIMATION_DURATION_APPEARANCE = 1000;
     private static final int INNER_PADDING = 100;
@@ -81,11 +83,18 @@ public class PieChart extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        int touchedSlice = getSlice(event.getX(), event.getY());
         boolean handle = false;
-        if (touchedSlice >= 0 && mOnSliceSelectedListener != null) {
-            handle = mOnSliceSelectedListener.onSelected(touchedSlice);
+
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            int touchedSlice = getSlice(event.getX(), event.getY());
+
+            if (touchedSlice >= 0 && mOnSliceSelectedListener != null) {
+                handle = mOnSliceSelectedListener.onSelected(touchedSlice);
+            }
+        } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            handle = true;
         }
+
         return handle || super.onTouchEvent(event);
     }
 
