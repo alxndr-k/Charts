@@ -6,4 +6,5 @@ public interface FragmentManagerInterface {
 
     public void show(Type type);
 
+    public void onChanged();
 }

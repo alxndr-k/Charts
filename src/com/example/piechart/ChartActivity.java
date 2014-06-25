@@ -45,6 +45,14 @@ public class ChartActivity extends Activity implements FragmentManagerInterface 
     }
 
     @Override
+    public void onChanged() {
+        if (App.isLandscape()) {
+            ChartFragment fragment = (ChartFragment) getFragmentManager().findFragmentByTag(Type.Chart.name());
+            fragment.update();
+        }
+    }
+
+    @Override
     public void show(Type type) {
         show(type, R.id.holder);
     }

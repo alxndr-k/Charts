@@ -80,6 +80,10 @@ public class ChartFragment extends Fragment {
         }
     }
 
+    public void update() {
+        mChart.apply(mValues, false);
+    }
+
     private void showColorPicker(final int index) {
         int color = mValues.get(index).color;
         ColorPickerDialogFragment picker = ColorPickerDialogFragment.newFragment(color);
@@ -88,6 +92,7 @@ public class ChartFragment extends Fragment {
             @Override
             public void onColorSelected(int color) {
                 mValues.get(index).color = color;
+                mChart.apply(mValues, false);
             }
         });
     }

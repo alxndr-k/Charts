@@ -13,7 +13,7 @@ import com.example.piechart.views.adapters.SlicesAdapter;
 
 import java.util.ArrayList;
 
-public class PreferencesFragment extends Fragment implements SlicesAdapter.OnRemoveListener {
+public class PreferencesFragment extends Fragment implements SlicesAdapter.OnValueChangedListener {
 
     private static final String ARG_VALUES = "ARG_VALUES";
 
@@ -21,8 +21,7 @@ public class PreferencesFragment extends Fragment implements SlicesAdapter.OnRem
     private AnimatedListView mListView;
     private SlicesAdapter mAdapter;
 
-    public PreferencesFragment() {
-    }
+    public PreferencesFragment() { }
 
     public static PreferencesFragment newFragment(ArrayList<Slice> values) {
         Bundle args = new Bundle();
@@ -84,6 +83,11 @@ public class PreferencesFragment extends Fragment implements SlicesAdapter.OnRem
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onChanged() {
+        mManager.onChanged();
     }
 
     @Override

@@ -37,6 +37,7 @@ public class ColorPickerDialogFragment extends DialogFragment implements DialogI
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         ColorPicker picker = new ColorPicker(getActivity());
         picker.setOnColorSelectedListener(this);
+        picker.setColor(mColor);
         picker.setOldCenterColor(mColor);
         picker.setNewCenterColor(mColor);
 

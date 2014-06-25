@@ -14,13 +14,15 @@ import java.util.ArrayList;
 
 public class SlicesAdapter extends BaseAdapter {
 
-    public interface OnRemoveListener {
+    public interface OnValueChangedListener {
+        void onChanged();
+
         void onRemove(View parent);
     }
 
     private LayoutInflater mInflater;
 
-    private OnRemoveListener mRemoveListener;
+    private OnValueChangedListener mListener;
 
     private ArrayList<Slice> mValues = new ArrayList<Slice>(Constants.MAX_VALUES_COUNT);
     private ArrayList<Integer> mStableIds = new ArrayList<Integer>(Constants.MAX_VALUES_COUNT); // array with unique id, need that for animation
@@ -28,9 +30,9 @@ public class SlicesAdapter extends BaseAdapter {
     private int mNextId; // unique id for next item to add
     private int mSum;
 
-    public SlicesAdapter(Context context, OnRemoveListener listener, ArrayList<Slice> values) {
+    public SlicesAdapter(Context context, OnValueChangedListener listener, ArrayList<Slice> values) {
         mInflater = LayoutInflater.from(context);
-        mRemoveListener = listener;
+        mListener = listener;
         mValues = values;
         for (mNextId = 0; mNextId < mValues.size(); ++mNextId) {
             mStableIds.add(mNextId);
@@ -102,11 +104,11 @@ public class SlicesAdapter extends BaseAdapter {
             int index = (Integer) seekBar.getTag();
             mSum = (int) (mSum - mValues.get(index).value + value);
             mValues.get(index).value = value;
+            mListener.onChanged();
         }
 
         @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-        }
+        public void onStartTrackingTouch(SeekBar seekBar) { }
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
@@ -117,7 +119,7 @@ public class SlicesAdapter extends BaseAdapter {
     private View.OnClickListener mRemoveOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mRemoveListener.onRemove((View) v.getParent());
+            mListener.onRemove((View) v.getParent());
         }
     };
 
