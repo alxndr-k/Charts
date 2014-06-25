@@ -4,7 +4,7 @@
 
     <!-- Pie Chart -->
     <string name="pie_chart_refresh">Refresh</string>
-    <string name="chart_no_data_to_build">(No data)</string>
+    <string name="chart_no_data_to_build">______________________________________</string>
 
     <!-- Action Bar -->
     <string name="action_bar_preferences">Preferences</string>
@@ -13,8 +13,13 @@
     <string name="action_bar_preferences_add">Add item</string>
 
     <!-- Preferences -->
-    <string name="preferences_no_items">(No data)</string>
+    <string name="preferences_no_items">________________________________</string>
     <string name="preferences_added_max_items_number">Remove some items first</string>
     <string name="preferences_remove_description">Remove slice</string>
+
+    <!-- Color Picker -->
+    <string name="color_picker_title">Select color</string>
+    <string name="color_picker_positive_button">OK</string>
+    <string name="color_picker_negative_button">Cancel</string>
 
 </resources>

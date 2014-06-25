@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.*;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import com.example.piechart.R;
 import com.example.piechart.views.adapters.Slice;
@@ -12,6 +13,8 @@ import com.example.piechart.views.adapters.Slice;
 import java.util.ArrayList;
 
 public class PieChart extends View {
+
+    public interface OnSliceSelectedListener { boolean onSelected(int index); }
 
     private static final int ANIMATION_DURATION_APPEARANCE = 1000;
     private static final int INNER_PADDING = 100;
@@ -22,6 +25,8 @@ public class PieChart extends View {
     private int mEmptyTextSize;
 
     private ArrayList<Slice> mValues = new ArrayList<Slice>();
+
+    private OnSliceSelectedListener mOnSliceSelectedListener;
 
     private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private RectF mPieRect;
@@ -49,37 +54,6 @@ public class PieChart extends View {
         }
     }
 
-    public void refresh(boolean animate) {
-        if (animate) {
-            mAppearanceAnimator.start();
-        } else {
-            mAppearance = 1;
-            invalidate();
-        }
-
-    }
-
-    public void apply(ArrayList<Slice> values, boolean animate) {
-        mValues.clear();
-
-        if (values != null && values.size() > 0) {
-            int total = 0;
-            for (Slice slice : values) total += slice.value;
-
-            float alignment = 360.0f;
-            for (int i = 0; i < values.size() - 1; ++i) {
-                float value = 360.0f * values.get(i).value / total;
-                alignment -= value;
-                mValues.add(new Slice(value, values.get(i).color));
-            }
-
-            int last = values.size() - 1;
-            mValues.add(new Slice(alignment, values.get(last).color));
-        }
-
-        refresh(animate);
-    }
-
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -103,6 +77,71 @@ public class PieChart extends View {
         } else {
             drawNoData(canvas);
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int touchedSlice = getSlice(event.getX(), event.getY());
+        boolean handle = false;
+        if (touchedSlice >= 0 && mOnSliceSelectedListener != null) {
+            handle = mOnSliceSelectedListener.onSelected(touchedSlice);
+        }
+        return handle || super.onTouchEvent(event);
+    }
+
+    public void refresh(boolean animate) {
+        if (animate) {
+            mAppearanceAnimator.start();
+        } else {
+            mAppearance = 1;
+            invalidate();
+        }
+    }
+
+    public void apply(ArrayList<Slice> values, boolean animate) {
+        mValues.clear();
+
+        if (values != null && values.size() > 0) {
+            int total = 0;
+            for (Slice slice : values) total += slice.value;
+
+            float alignment = 360.0f;
+            for (int i = 0; i < values.size() - 1; ++i) {
+                float value = 360.0f * values.get(i).value / total;
+                alignment -= value;
+                mValues.add(new Slice(value, values.get(i).color));
+            }
+
+            int last = values.size() - 1;
+            mValues.add(new Slice(alignment, values.get(last).color));
+        }
+
+        refresh(animate);
+    }
+
+    public void setOnSliceSelectedListener(OnSliceSelectedListener listener) {
+        mOnSliceSelectedListener = listener;
+    }
+
+    private int getSlice(float x, float y) {
+        float cx = mPieRect.centerX();
+        float cy = mPieRect.centerY();
+        double radius = Math.hypot((x - cx), (y - cy));
+
+        // check if the point is inside chart
+        if (!(radius * 2 <= mPieRect.height())) return -1;
+
+        // get touch angle (related to the chart center)
+        double angle = Math.toDegrees(Math.atan2(y - cy, x - cx));
+        angle = (360 + angle) % 360;
+
+        int sum = 0;
+        for (int i = 0; i < mValues.size(); i++) {
+            sum += mValues.get(i).value;
+            if (sum > angle) return i;
+        }
+
+        return -1;
     }
 
     private void drawChart(Canvas canvas) {

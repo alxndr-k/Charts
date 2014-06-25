@@ -38,7 +38,7 @@ public class ChartFragment extends Fragment {
         try {
             mManager = (FragmentManagerInterface) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implements FragmentManagerInterface");
+            throw new ClassCastException(activity.toString() + " must implements " + FragmentManagerInterface.class.getSimpleName());
         }
     }
 
@@ -56,6 +56,7 @@ public class ChartFragment extends Fragment {
         int padding = getResources().getDimensionPixelOffset(R.dimen.padding_middle);
         mChart.setPadding(padding, padding, padding, padding);
         mChart.apply(mValues, false);
+        mChart.setOnSliceSelectedListener(mOnSliceSelectedListener);
 
         return mChart;
     }
@@ -78,4 +79,24 @@ public class ChartFragment extends Fragment {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    private void showColorPicker(final int index) {
+        int color = mValues.get(index).color;
+        ColorPickerDialogFragment picker = ColorPickerDialogFragment.newFragment(color);
+        picker.show(getFragmentManager(), "dialog");
+        picker.setOnColorSelectedListener(new ColorPickerDialogFragment.OnColorSelectedListener() {
+            @Override
+            public void onColorSelected(int color) {
+                mValues.get(index).color = color;
+            }
+        });
+    }
+
+    private PieChart.OnSliceSelectedListener mOnSliceSelectedListener = new PieChart.OnSliceSelectedListener() {
+        @Override
+        public boolean onSelected(int index) {
+            showColorPicker(index);
+            return true;
+        }
+    };
 }

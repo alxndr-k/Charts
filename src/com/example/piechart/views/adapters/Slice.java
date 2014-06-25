@@ -27,7 +27,7 @@ public class Slice implements Serializable {
     }
 
     private int getColor() {
-        int a = getRandomColor() << (BYTE_SHIFT * 3);
+        int a = 0xFF << (BYTE_SHIFT * 3);
         int r = getRandomColor() << (BYTE_SHIFT * 2);
         int g = getRandomColor() << BYTE_SHIFT;
         int b = getRandomColor();
