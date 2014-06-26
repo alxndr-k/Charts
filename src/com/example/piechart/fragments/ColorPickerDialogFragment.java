@@ -5,12 +5,16 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
 import com.example.piechart.R;
 import com.larswerkman.holocolorpicker.ColorPicker;
 
 public class ColorPickerDialogFragment extends DialogFragment implements DialogInterface.OnClickListener, ColorPicker.OnColorSelectedListener {
 
-    public interface OnColorSelectedListener { void onColorSelected(int color); }
+    public interface OnColorSelectedListener {
+        void onColorSelected(int color);
+    }
 
     private static final String ARG_COLOR = "ARG_COLOR";
 
@@ -35,7 +39,8 @@ public class ColorPickerDialogFragment extends DialogFragment implements DialogI
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        ColorPicker picker = new ColorPicker(getActivity());
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.d_color_picker, null);
+        ColorPicker picker = (ColorPicker) view.findViewById(R.id.picker);/*new ColorPicker(getActivity());*/
         picker.setOnColorSelectedListener(this);
         picker.setColor(mColor);
         picker.setOldCenterColor(mColor);
@@ -44,7 +49,7 @@ public class ColorPickerDialogFragment extends DialogFragment implements DialogI
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setCancelable(true)
                 .setTitle(R.string.color_picker_title)
-                .setView(picker)
+                .setView(view)
                 .setPositiveButton(R.string.color_picker_positive_button, ColorPickerDialogFragment.this)
                 .setNegativeButton(R.string.color_picker_negative_button, ColorPickerDialogFragment.this);
         return builder.create();
