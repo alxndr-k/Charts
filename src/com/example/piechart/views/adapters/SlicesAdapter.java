@@ -62,15 +62,11 @@ public class SlicesAdapter extends BaseAdapter {
 
         if (view == null) {
             view = mInflater.inflate(R.layout.li_slice, parent, false);
-
-            SeekBar seek = (SeekBar) view.findViewById(R.id.seek);
-            seek.setOnSeekBarChangeListener(mSeekChangeListener);
-
             view.findViewById(R.id.remove).setOnClickListener(mRemoveOnClickListener);
 
             holder = new ViewHolder();
             holder.value = (TextView) view.findViewById(R.id.value);
-            holder.seek = seek;
+            holder.seek = (SeekBar) view.findViewById(R.id.seek);
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();
@@ -78,6 +74,7 @@ public class SlicesAdapter extends BaseAdapter {
 
         holder.seek.setTag(position);
         holder.seek.setProgress((int) getItem(position).value);
+        holder.seek.setOnSeekBarChangeListener(mSeekChangeListener);
 
         holder.value.setText(String.format("%.1f%%", mValues.get(position).value * 100.0 / mSum));
 
@@ -89,6 +86,7 @@ public class SlicesAdapter extends BaseAdapter {
         mValues.add(0, new Slice(Constants.DEFAULT_VALUE));
         mStableIds.add(0, ++mNextId);
         notifyDataSetChanged();
+        mListener.onChanged();
     }
 
     public void remove(int position) {
@@ -96,6 +94,7 @@ public class SlicesAdapter extends BaseAdapter {
         mValues.remove(position);
         mStableIds.remove(position);
         notifyDataSetChanged();
+        mListener.onChanged();
     }
 
     private SeekBar.OnSeekBarChangeListener mSeekChangeListener = new SeekBar.OnSeekBarChangeListener() {
@@ -104,7 +103,10 @@ public class SlicesAdapter extends BaseAdapter {
             int index = (Integer) seekBar.getTag();
             mSum = (int) (mSum - mValues.get(index).value + value);
             mValues.get(index).value = value;
-            mListener.onChanged();
+
+            if (fromUser) {
+                mListener.onChanged();
+            }
         }
 
         @Override
