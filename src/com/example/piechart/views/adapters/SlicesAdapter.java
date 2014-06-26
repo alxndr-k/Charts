@@ -11,6 +11,7 @@ import com.example.piechart.Constants;
 import com.example.piechart.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SlicesAdapter extends BaseAdapter {
 
@@ -26,6 +27,8 @@ public class SlicesAdapter extends BaseAdapter {
 
     private ArrayList<Slice> mValues = new ArrayList<Slice>(Constants.MAX_VALUES_COUNT);
     private ArrayList<Integer> mStableIds = new ArrayList<Integer>(Constants.MAX_VALUES_COUNT); // array with unique id, need that for animation
+
+    private HashMap<TextView, Integer> mValueViews = new HashMap<TextView, Integer>(Constants.MAX_VALUES_COUNT);
 
     private int mNextId; // unique id for next item to add
     private int mSum;
@@ -78,6 +81,8 @@ public class SlicesAdapter extends BaseAdapter {
 
         holder.value.setText(String.format("%.1f%%", mValues.get(position).value * 100.0 / mSum));
 
+        mValueViews.put(holder.value, position);
+
         return view;
     }
 
@@ -97,6 +102,22 @@ public class SlicesAdapter extends BaseAdapter {
         mListener.onChanged();
     }
 
+    private void updateValues() {
+        ArrayList<View> remove = new ArrayList<View>();
+        for (TextView view : mValueViews.keySet()) {
+            if (view.getWindowToken() == null) {
+                remove.add(view);
+            } else {
+                int position = mValueViews.get(view);
+                view.setText(String.format("%.1f%%", mValues.get(position).value * 100.0 / mSum));
+            }
+        }
+
+        for (View view : remove) {
+            mValueViews.remove(view);
+        }
+    }
+
     private SeekBar.OnSeekBarChangeListener mSeekChangeListener = new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int value, boolean fromUser) {
@@ -106,6 +127,7 @@ public class SlicesAdapter extends BaseAdapter {
 
             if (fromUser) {
                 mListener.onChanged();
+                updateValues();
             }
         }
 
@@ -125,7 +147,7 @@ public class SlicesAdapter extends BaseAdapter {
         }
     };
 
-    private class ViewHolder {
+    public class ViewHolder {
         TextView value;
         SeekBar seek;
     }
